@@ -80,16 +80,21 @@
             });
     }
 
-    function traiterUID(messageBrut) {
-        // NETTOYAGE : On extrait l'UID même s'il y a des { } " : ou des espaces
-        // Cette regex cherche un format qui ressemble à un UID (chiffres, lettres et :)
-        const regexUID = /([0-9A-Fa-f]{2}[:]){3,}[0-9A-Fa-f]{2}/;
-        const match = messageBrut.match(regexUID);
-        
-        const uid = match ? match[0].toUpperCase() : messageBrut.trim();
-        afficherProfil(uid);
-    }
-
+function traiterUID(messageBrut) {
+    // 1. On décode les symboles (transforme %3A en :)
+    let decode = decodeURIComponent(messageBrut);
+    
+    // 2. On nettoie si le téléphone a envoyé "ID=ID" ou mis des symboles bizarres
+    // On cherche juste une suite de caractères qui ressemble à un UID
+    const regexUID = /([0-9A-Fa-f]{2}[:]){3,}[0-9A-Fa-f]{2}/;
+    const match = decode.match(regexUID);
+    
+    // 3. On récupère le premier résultat trouvé et on le met en majuscules
+    const uid = match ? match[0].toUpperCase() : decode.trim();
+    
+    console.log("UID final traité :", uid); // Pour vérifier dans la console du navigateur
+    afficherProfil(uid);
+}
     function afficherProfil(uid) {
         const user = membres[uid];
         document.getElementById('waiting').style.display = 'none';
