@@ -32,11 +32,12 @@
         body { font-family: 'DM Sans', sans-serif; background-color: var(--bg-color); color: var(--text-main); height: 100vh; overflow: hidden; display: flex; }
 
         /* =========================================
-           2. SIDEBAR (NAVIGATION)
+           2. SIDEBAR (NAVIGATION) + LOGO INTERNE
            ========================================= */
         .sidebar { width: 280px; background: var(--sidebar-color); height: 100vh; display: flex; flex-direction: column; padding: 30px 20px; border-right: 1px solid var(--border); z-index: 100; flex-shrink: 0; }
         .logo-area { display: flex; align-items: center; gap: 15px; margin-bottom: 50px; padding-left: 10px; }
-        .logo-circle { width: 45px; height: 45px; background: linear-gradient(135deg, var(--primary), var(--primary-light)); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; font-size: 1.3rem; box-shadow: 0 10px 20px rgba(67, 97, 238, 0.3); }
+        /* Nouveau style pour le logo dans la sidebar */
+        .logo-app { width: 45px; height: 45px; border-radius: 12px; object-fit: cover; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
         .logo-text { font-size: 1.4rem; font-weight: 800; letter-spacing: -0.5px; color: var(--dark); }
 
         .nav-menu { flex: 1; }
@@ -74,7 +75,7 @@
         .trend-up { color: var(--success); }
 
         /* =========================================
-           5. SECTION BORNE AUTOMATIQUE (MODE SCAN)
+           5. SECTION BORNE AUTOMATIQUE + LOGO LIVE
            ========================================= */
         #borne-view { background: var(--dark); height: 100vh; width: 100%; position: fixed; top: 0; left: 0; z-index: 1000; display: none; flex-direction: column; align-items: center; justify-content: center; color: white; text-align: center; transition: 0.5s; }
         .borne-active { display: flex !important; animation: fadeIn 0.5s; }
@@ -89,9 +90,10 @@
         .borne-name { font-size: 3rem; font-weight: 800; margin-bottom: 10px; }
         .borne-status { font-size: 1.5rem; font-weight: 700; color: var(--success); text-transform: uppercase; letter-spacing: 2px; }
         
-        .instruction { font-size: 2rem; font-weight: 500; opacity: 0.7; margin-top: 40px; }
-        .nfc-icon-large { font-size: 8rem; color: var(--primary); margin-bottom: 30px; animation: wifi 2s infinite; }
-        @keyframes wifi { 0% { opacity: 0.3; transform: scale(0.9); } 50% { opacity: 1; transform: scale(1.1); } 100% { opacity: 0.3; transform: scale(0.9); } }
+        .instruction { font-size: 2rem; font-weight: 500; opacity: 0.7; margin-top: 20px; }
+        /* Nouveau style pour le logo géant en attente */
+        .logo-nfc-large { width: 150px; height: 150px; border-radius: 30px; object-fit: cover; margin-bottom: 30px; animation: wifi 2s infinite; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+        @keyframes wifi { 0% { opacity: 0.4; transform: scale(0.95); } 50% { opacity: 1; transform: scale(1.05); } 100% { opacity: 0.4; transform: scale(0.95); } }
 
         /* =========================================
            6. TABLES & LISTES
@@ -120,7 +122,7 @@
         .feed-item { display: flex; align-items: center; gap: 15px; padding: 15px; background: #f8f9fa; border-radius: 15px; margin-bottom: 10px; animation: slideIn 0.4s ease-out; }
         @keyframes slideIn { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
 
-        .exit-borne { position: absolute; top: 30px; right: 30px; background: rgba(255,255,255,0.1); border: none; color: white; padding: 10px 20px; border-radius: 10px; cursor: pointer; z-index: 1100; }
+        .exit-borne { position: absolute; top: 30px; right: 30px; background: rgba(255,255,255,0.1); border: none; color: white; padding: 10px 20px; border-radius: 10px; cursor: pointer; z-index: 1100; font-weight: bold; transition: 0.3s; }
         .exit-borne:hover { background: var(--danger); }
 
     </style>
@@ -129,7 +131,7 @@
 
     <aside class="sidebar">
         <div class="logo-area">
-            <div class="logo-circle">P+</div>
+            <img src="logo_petit_plus.jpeg" alt="Logo" class="logo-app">
             <div class="logo-text">LE PETIT PLUS</div>
         </div>
         
@@ -148,9 +150,9 @@
             </div>
         </div>
 
-        <div style="background: var(--bg-color); padding: 20px; border-radius: 20px; font-size: 0.8rem;">
+        <div style="background: var(--bg-color); padding: 20px; border-radius: 20px; font-size: 0.8rem; text-align: center;">
             <p style="color: var(--text-muted); margin-bottom: 5px;">STATION ACTIVE</p>
-            <strong id="live-time">14:22:05</strong>
+            <strong id="live-time">--:--:--</strong>
         </div>
     </aside>
 
@@ -159,7 +161,7 @@
             <div class="page-title" id="page-hdr">Tableau de Bord</div>
             <div class="status-pill">
                 <div class="dot"></div>
-                SERVEUR : <span style="color: var(--primary);">NFC-CASTRES-01</span>
+                TERMINAL : <span style="color: var(--primary);">NFC-CASTRES-01</span>
             </div>
         </header>
 
@@ -247,10 +249,10 @@
     </div>
 
     <div id="borne-view">
-        <button class="exit-borne" onclick="toggleBorne(false)">Quitter le mode Borne (Echap)</button>
+        <button class="exit-borne" onclick="toggleBorne(false)">Quitter (Echap)</button>
         
         <div id="borne-idle">
-            <i class="fa-solid fa-rss nfc-icon-large"></i>
+            <img src="logo_petit_plus.jpeg" alt="NFC" class="logo-nfc-large">
             <h1 style="font-size: 4rem; font-weight: 800;">BORNE ACTIVE</h1>
             <p class="instruction">Approchez votre carte du lecteur...</p>
             <p style="margin-top: 100px; opacity: 0.5;">Système de gestion solidaire - Le Petit Plus</p>
@@ -269,7 +271,7 @@
         const topic = "le_petit_plus_demo_castres";
         const adhésionPrix = 5;
 
-        // Génération automatique de données pour "remplir" l'appli
+        // Génération automatique de données
         const prenoms = ["Lucas", "Emma", "Noah", "Jade", "Léo", "Chloé", "Enzo", "Alice", "Hugo", "Lina", "Nathan", "Mila", "Liam", "Manon", "Maël", "Inès", "Théo", "Lola", "Gabriel", "Léa"];
         const noms = ["Martin", "Bernard", "Thomas", "Petit", "Robert", "Richard", "Durand", "Dubois", "Moreau", "Laurent"];
         
@@ -278,7 +280,6 @@
             "E0:04:01:09:09:15:C0:06": { nom: "Staff Petit Plus", pic: "https://i.pravatar.cc/150?u=staff", type: "Staff", date: "01/09/2025", visits: 45 }
         };
 
-        // On remplit avec 29 membres de plus
         for(let i=0; i<29; i++) {
             let id = "C" + i + ":DE:AD:BE:EF";
             db_membres[id] = {
@@ -305,7 +306,7 @@
             else v.classList.remove('borne-active');
         }
 
-        // --- 3. LOGIQUE NFC & AFFICHAGE AUTOMATIQUE ---
+        // --- 3. LOGIQUE NFC ---
         function listenNFC() {
             fetch(`https://ntfy.sh/${topic}/json`)
                 .then(response => {
@@ -342,7 +343,6 @@
 
             const user = db_membres[uid];
             if(user) {
-                // Actions de mise à jour
                 user.visits++;
                 showBorneSuccess(user);
                 addToHistory(user);
@@ -354,18 +354,11 @@
         function showBorneSuccess(user) {
             const idle = document.getElementById('borne-idle');
             const card = document.getElementById('borne-success');
-            
-            // On remplit la carte
             document.getElementById('b-name').innerText = user.nom;
             document.getElementById('b-pic').src = user.pic;
-
-            // On switch l'affichage
             idle.style.display = 'none';
             card.classList.add('visible');
-
             new Audio('https://assets.mixkit.co/active_storage/sfx/2358/2358-preview.mp3').play();
-
-            // AUTOMATIQUE : On revient à l'état initial après 3.5 secondes
             setTimeout(() => {
                 card.classList.remove('visible');
                 idle.style.display = 'block';
@@ -393,7 +386,7 @@
             row.innerHTML = `<td>${time}</td><td>${user.nom}</td><td><span class="badge ${user.type == 'Staff' ? 'badge-staff':'badge-active'}">${user.type}</span></td><td><span style="color:var(--success)">● Présent</span></td>`;
         }
 
-        // --- 4. MISE À JOUR UI & STATS ---
+        // --- 4. MISE À JOUR UI ---
         function updateStats() {
             const count = Object.keys(db_membres).length;
             document.getElementById('stat-members').innerText = count;
@@ -426,13 +419,9 @@
             updateStats();
             refreshUI();
             listenNFC();
-            
-            // Horloge
             setInterval(() => {
                 document.getElementById('live-time').innerText = new Date().toLocaleTimeString();
             }, 1000);
-
-            // Chart
             const ctx = document.getElementById('mainChart').getContext('2d');
             new Chart(ctx, {
                 type: 'doughnut',
@@ -448,7 +437,6 @@
             });
         };
 
-        // Touche Echap pour quitter la borne
         window.addEventListener('keydown', (e) => {
             if(e.key === "Escape") toggleBorne(false);
         });
