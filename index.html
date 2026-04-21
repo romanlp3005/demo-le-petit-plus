@@ -181,10 +181,49 @@
         .stat-card .value { font-size: 2.2rem; font-weight: 800; color: var(--dark-blue); }
         .stat-card .label { color: var(--text-secondary); font-weight: 600; margin-top: 5px; }
 
-        .dashboard-layout { display: grid; grid-template-columns: 2fr 1fr; gap: 30px; }
+        /* Correction de la grille du Dashboard */
+        .dashboard-layout { 
+            display: grid; 
+            grid-template-columns: 2fr 1fr; 
+            gap: 30px; 
+            align-items: start; /* Empêche l'étirement infini */
+        }
         
-        .box { background: white; border-radius: var(--radius-lg); padding: 30px; box-shadow: var(--card-shadow); }
-        .box h3 { margin-bottom: 25px; font-size: 1.3rem; display: flex; align-items: center; gap: 10px; }
+        .box { 
+            background: white; 
+            border-radius: var(--radius-lg); 
+            padding: 30px; 
+            box-shadow: var(--card-shadow); 
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .box h3 { 
+            margin-bottom: 25px; 
+            font-size: 1.3rem; 
+            display: flex; 
+            align-items: center; 
+            gap: 10px; 
+        }
+
+        /* Fixation des tailles pour empêcher le bug */
+        .feed-box { height: 450px; }
+        .chart-box { height: 450px; }
+        
+        .scrollable-feed { 
+            flex: 1; 
+            overflow-y: auto; 
+            padding-right: 10px; 
+        }
+        .scrollable-feed::-webkit-scrollbar { width: 6px; }
+        .scrollable-feed::-webkit-scrollbar-thumb { background: #e0e5f2; border-radius: 10px; }
+
+        .chart-container { 
+            position: relative; /* Obligatoire pour Chart.js */
+            height: 100%; 
+            width: 100%; 
+            flex: 1;
+        }
 
         /* Tables Pro */
         .table-wrap { overflow-x: auto; }
@@ -200,6 +239,63 @@
         .badge-active { background: #e6fffa; color: #00b5ad; }
         .badge-benevole { background: #fff5f5; color: #e53e3e; }
         .badge-staff { background: #ebf8ff; color: #3182ce; }
+
+
+/* Grille de KPIs étendue */
+        .grid-stats-expanded { 
+            display: grid; 
+            grid-template-columns: repeat(3, 1fr); 
+            gap: 20px; 
+            margin-bottom: 30px; 
+        }
+
+        /* Style spécifique pour le Bénévole du Mois */
+        .volunteer-trophy {
+            background: linear-gradient(135deg, #ff9f1c, #ffbf69);
+            color: white;
+            border-radius: var(--radius-lg);
+            padding: 30px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(255, 159, 28, 0.3);
+            grid-column: span 1;
+        }
+        .volunteer-trophy i.fa-crown {
+            position: absolute;
+            right: -10px;
+            bottom: -10px;
+            font-size: 8rem;
+            opacity: 0.2;
+            transform: rotate(-15deg);
+        }
+        .trophy-img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 4px solid white;
+            object-fit: cover;
+        }
+
+        /* Petits indicateurs secondaires */
+        .mini-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            grid-column: span 2;
+        }
+        .mini-card {
+            background: white;
+            padding: 20px;
+            border-radius: var(--radius-md);
+            box-shadow: var(--card-shadow);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .mini-card .val { font-size: 1.4rem; color: var(--accent); }
 
         /* ============================================================
            5. MODE BORNE AUTOMATIQUE (FULLSCREEN)
@@ -296,60 +392,71 @@
         <div class="view-content">
             
             <section id="dash-tab" class="section-view active">
-                <div class="grid-stats">
+                
+                <div class="grid-stats-expanded">
+                    <div class="volunteer-trophy">
+                        <i class="fa-solid fa-crown"></i>
+                        <img src="" id="top-benevole-img" class="trophy-img">
+                        <div style="z-index:1">
+                            <h4 style="margin:0; text-transform: uppercase; font-size: 0.8rem; opacity: 0.9;">🏆 Bénévole du Mois</h4>
+                            <h2 id="top-benevole-name" style="margin: 5px 0; font-size: 1.6rem;">--</h2>
+                            <p id="top-benevole-hours" style="font-weight: 800; font-size: 1.1rem;"></p>
+                        </div>
+                    </div>
+
+                    <div class="mini-stats">
+                        <div class="mini-card">
+                            <div class="label"><i class="fa-solid fa-euro-sign"></i> CA Total</div>
+                            <div class="val" id="stat-ca-total">--</div>
+                        </div>
+                        <div class="mini-card">
+                            <div class="label"><i class="fa-solid fa-users"></i> Adhérents</div>
+                            <div class="val" id="stat-total-members">--</div>
+                        </div>
+                        <div class="mini-card">
+                            <div class="label"><i class="fa-solid fa-stopwatch"></i> Cumul Heures</div>
+                            <div class="val" id="stat-cumul-heures">--</div>
+                        </div>
+                        <div class="mini-card">
+                            <div class="label"><i class="fa-solid fa-arrow-trend-up"></i> Croissance</div>
+                            <div class="val" style="color: var(--success)">+ 12%</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid-stats" style="margin-top:0;">
                     <div class="stat-card">
-                        <div class="icon"><i class="fa-solid fa-euro-sign"></i></div>
-                        <div class="value" id="val-ca">255,00 €</div>
-                        <div class="label">Total Recettes</div>
+                        <div class="val" id="stat-avg-session">--</div>
+                        <div class="label">Session Moyenne</div>
                     </div>
                     <div class="stat-card">
-                        <div class="icon" style="color: var(--success);"><i class="fa-solid fa-user-check"></i></div>
-                        <div class="value" id="val-adh">51</div>
-                        <div class="label">Adhérents Actifs</div>
+                        <div class="val" id="stat-visits-today">--</div>
+                        <div class="label">Passages Aujourd'hui</div>
                     </div>
                     <div class="stat-card">
-                        <div class="icon" style="color: var(--warning);"><i class="fa-solid fa-clock"></i></div>
-                        <div class="value" id="val-hours">142h</div>
-                        <div class="label">Temps Bénévolat</div>
+                        <div class="val" id="stat-active-benevoles">--</div>
+                        <div class="label">Bénévoles ce mois</div>
                     </div>
                     <div class="stat-card">
-                        <div class="icon" style="color: var(--danger);"><i class="fa-solid fa-calendar-day"></i></div>
-                        <div class="value" id="val-today">12</div>
-                        <div class="label">Visites du Jour</div>
+                        <div class="val">5,00 €</div>
+                        <div class="label">Tarif Adhésion</div>
                     </div>
                 </div>
 
                 <div class="dashboard-layout">
-                    <div class="box">
-                        <h3><i class="fa-solid fa-rss"></i> Flux Temps Réel</h3>
-                        <div id="live-feed-container">
-                            </div>
+                    <div class="box feed-box">
+                        <h3><i class="fa-solid fa-rss"></i> Flux en Direct</h3>
+                        <div id="live-feed-container" class="scrollable-feed"></div>
                     </div>
-                    <div class="box">
-                        <h3><i class="fa-solid fa-chart-pie"></i> Type d'Adhérents</h3>
-                        <canvas id="chartType" height="300"></canvas>
+                    <div class="box chart-box">
+                        <h3><i class="fa-solid fa-chart-pie"></i> Répartition</h3>
+                        <div class="chart-container">
+                            <canvas id="chartType"></canvas>
+                        </div>
                     </div>
                 </div>
             </section>
 
-            <section id="members-tab" class="section-view">
-                <div class="box">
-                    <div class="table-wrap">
-                        <table id="table-members">
-                            <thead>
-                                <tr>
-                                    <th>Membre</th>
-                                    <th>UID NFC</th>
-                                    <th>Adhésion</th>
-                                    <th>Visites</th>
-                                    <th>Dernier passage</th>
-                                </tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>
-                    </div>
-                </div>
-            </section>
 
             <section id="benevoles-tab" class="section-view">
                 <div class="grid-stats">
@@ -433,35 +540,39 @@
         const nfcTopic = "le_petit_plus_demo_castres";
         const ADHESION_PRIX = 5;
 
-        // Génération de 51 membres pour "remplir" l'application
-        const firstNames = ["Léo", "Manon", "Gabriel", "Jade", "Lucas", "Emma", "Louis", "Léa", "Hugo", "Chloé", "Nathan", "Mila", "Enzo", "Alice", "Liam", "Ambre", "Mael", "Ines", "Noah", "Lola"];
-        const lastNames = ["Martin", "Bernard", "Thomas", "Petit", "Robert", "Richard", "Durand", "Dubois", "Moreau", "Laurent", "Simon", "Michel", "Lefebvre", "Leroy", "Roux"];
+        // Génération de 250 membres pour remplir massivement l'application
+        const firstNames = ["Léo", "Manon", "Gabriel", "Jade", "Lucas", "Emma", "Louis", "Léa", "Hugo", "Chloé", "Nathan", "Mila", "Enzo", "Alice", "Liam", "Ambre", "Mael", "Ines", "Noah", "Lola", "Arthur", "Juliette", "Paul", "Sarah", "Victor", "Clara"];
+        const lastNames = ["Martin", "Bernard", "Thomas", "Petit", "Robert", "Richard", "Durand", "Dubois", "Moreau", "Laurent", "Simon", "Michel", "Lefebvre", "Leroy", "Roux", "David", "Bertrand", "Morel", "Fournier", "Girard"];
         
         let db_membres = {
-            "04:A1:B2:C3:D4": { nom: "Roman L.", pic: "https://i.pravatar.cc/150?u=roman", type: "Adhérent", status: "badge-active", paye: true, date: "10/09/2025", visits: 14, totalHours: 0, isWorking: false },
-            "E0:04:01:09:09:15:C0:06": { nom: "Staff Petit Plus", pic: "https://i.pravatar.cc/150?u=staff", type: "Staff", status: "badge-staff", paye: true, date: "01/09/2025", visits: 88, totalHours: 12.5, isWorking: false }
+            "04:A1:B2:C3:D4": { nom: "Roman L.", pic: "https://i.pravatar.cc/150?u=roman", type: "Adhérent", status: "badge-active", paye: true, date: "10/09/2025", visits: 42, totalHours: 0, isWorking: false },
+            "E0:04:01:09:09:15:C0:06": { nom: "Staff Petit Plus", pic: "https://i.pravatar.cc/150?u=staff", type: "Staff", status: "badge-staff", paye: true, date: "01/09/2025", visits: 156, totalHours: 142.5, isWorking: false }
         };
 
-        // Remplissage automatique
-        for(let i=0; i<49; i++) {
-            let uid = `ID-${1000+i}`;
-            let isBenevole = i < 8; // Les 8 premiers sont bénévoles
+        // Remplissage automatique de 250 personnes
+        for(let i=0; i<250; i++) {
+            let uid = `ID-${10000+i}`;
+            let isBenevole = i < 35; // 35 bénévoles
+            let isStaff = i >= 35 && i < 40; // 5 membres du staff
+            
+            let type = isStaff ? "Staff" : (isBenevole ? "Bénévole" : "Adhérent");
+            let status = isStaff ? "badge-staff" : (isBenevole ? "badge-benevole" : "badge-active");
+
             db_membres[uid] = {
                 nom: firstNames[Math.floor(Math.random()*firstNames.length)] + " " + lastNames[Math.floor(Math.random()*lastNames.length)],
-                pic: `https://i.pravatar.cc/150?u=u${i}`,
-                type: isBenevole ? "Bénévole" : "Adhérent",
-                status: isBenevole ? "badge-benevole" : "badge-active",
+                pic: `https://i.pravatar.cc/150?u=user${i+50}`,
+                type: type,
+                status: status,
                 paye: true,
-                date: "15/09/2025",
-                visits: Math.floor(Math.random()*30),
-                totalHours: isBenevole ? (Math.random()*40).toFixed(1) : 0,
-                isWorking: false,
+                date: `0${Math.floor(Math.random()*9)+1}/09/2025`,
+                visits: Math.floor(Math.random()*80) + 2,
+                totalHours: isBenevole ? (Math.random()*180 + 15).toFixed(1) : 0,
+                isWorking: Math.random() > 0.8 && isBenevole, // Quelques bénévoles actuellement en service
                 startTime: null
             };
         }
 
         let transactions = [];
-        let historicalLogs = [];
 
         // --- LOGIQUE DE NAVIGATION ---
         function switchTab(id) {
@@ -515,14 +626,12 @@
 
             const user = db_membres[uid];
             if(user) {
-                // Logique spécifique Bénévoles (Pointage)
-                if(user.type === "Bénévole") {
+                if(user.type === "Bénévole" || user.type === "Staff") {
                     handleBenevoleTime(user);
                 }
-
                 user.visits++;
                 showBorneSuccess(user);
-                logVisit(user);
+                logVisit(user, new Date().toLocaleTimeString());
                 refreshAllTables();
                 updateGlobalStats();
             }
@@ -534,9 +643,9 @@
                 user.isWorking = true;
                 user.startTime = now;
             } else {
-                const diffMs = now - user.startTime;
-                const diffHrs = diffMs / (1000 * 60 * 60);
-                user.totalHours = (parseFloat(user.totalHours) + diffHrs).toFixed(1);
+                // S'il était déjà en service (simulation), on ajoute 2h par défaut pour la démo
+                let addedHrs = user.startTime ? (now - user.startTime)/(1000*60*60) : 2.5; 
+                user.totalHours = (parseFloat(user.totalHours) + addedHrs).toFixed(1);
                 user.isWorking = false;
                 user.startTime = null;
             }
@@ -550,11 +659,10 @@
             document.getElementById('s-name').innerText = user.nom;
             document.getElementById('s-img').src = user.pic;
             
-            // Message spécial bénévole
-            if(user.type === "Bénévole") {
+            if(user.type === "Bénévole" || user.type === "Staff") {
                 document.getElementById('s-msg').innerText = user.isWorking ? "Service Démarré" : "Service Terminé";
                 document.getElementById('s-msg').style.color = user.isWorking ? "var(--accent)" : "var(--warning)";
-                document.getElementById('s-info').innerText = user.isWorking ? "Bon courage !" : "Merci pour votre aide !";
+                document.getElementById('s-info').innerText = user.isWorking ? "Bon courage !" : "Temps de session enregistré !";
             } else {
                 document.getElementById('s-msg').innerText = "Accès Autorisé";
                 document.getElementById('s-msg').style.color = "var(--success)";
@@ -571,20 +679,32 @@
             }, 3500);
         }
 
-        function logVisit(user) {
+        function logVisit(user, timeStr, opacity = 1) {
             const feed = document.getElementById('live-feed-container');
-            const time = new Date().toLocaleTimeString();
             const html = `
-                <div class="feed-row">
+                <div class="feed-row" style="opacity: ${opacity}">
                     <img src="${user.pic}" class="user-avatar" style="width:35px; height:35px">
                     <div style="flex:1">
                         <strong>${user.nom}</strong><br>
                         <small>${user.type}</small>
                     </div>
-                    <div style="font-weight:800; color:var(--accent)">${time}</div>
+                    <div style="font-weight:800; color:var(--accent)">${timeStr}</div>
                 </div>
             `;
             feed.insertAdjacentHTML('afterbegin', html);
+        }
+
+        function prefillLiveFeed() {
+            // Prendre 15 utilisateurs au hasard pour simuler les passages récents
+            let recentUsers = Object.values(db_membres).sort(() => 0.5 - Math.random()).slice(0, 15);
+            let now = new Date();
+            
+            recentUsers.forEach((user, index) => {
+                let pastTime = new Date(now.getTime() - (index * 12 * 60000)); // Un passage toutes les 12 min
+                let timeString = pastTime.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                let opacity = 1 - (index * 0.05); // Les plus anciens sont plus clairs
+                logVisit(user, timeString, opacity);
+            });
         }
 
         function refreshAllTables() {
@@ -594,25 +714,28 @@
             Object.entries(db_membres).forEach(([uid, u]) => {
                 mBody.innerHTML += `
                     <tr>
-                        <td><div class="user-info"><img src="${u.pic}" class="user-avatar"><strong>${u.nom}</strong></div></td>
-                        <td><code>${uid}</code></td>
+                        <td><div class="user-info"><img src="${u.pic}" class="user-avatar" loading="lazy"><strong>${u.nom}</strong></div></td>
+                        <td><code>${uid.substring(0,8)}...</code></td>
                         <td><span class="badge ${u.status}">${u.type}</span></td>
                         <td>${u.visits} visites</td>
-                        <td>Aujourd'hui</td>
+                        <td>Récemment</td>
                     </tr>
                 `;
             });
 
-            // Table Bénévoles
+            // Table Bénévoles & Staff (Triés par heures décroissantes)
             const bBody = document.querySelector('#table-benevoles tbody');
             bBody.innerHTML = "";
-            Object.values(db_membres).filter(u => u.type === "Bénévole").forEach(u => {
+            let workers = Object.values(db_membres).filter(u => u.type === "Bénévole" || u.type === "Staff");
+            workers.sort((a, b) => parseFloat(b.totalHours) - parseFloat(a.totalHours)); // Le premier a le plus d'heures
+
+            workers.forEach(u => {
                 bBody.innerHTML += `
                     <tr>
                         <td><strong>${u.nom}</strong></td>
                         <td><span class="badge ${u.isWorking ? 'badge-active' : ''}">${u.isWorking ? '● EN SERVICE' : 'OFF'}</span></td>
-                        <td>${u.startTime ? u.startTime.toLocaleTimeString() : '--:--'}</td>
-                        <td>${u.isWorking ? 'Calcul en cours...' : '--'}</td>
+                        <td>${u.isWorking ? '14:00' : '--:--'}</td>
+                        <td>${u.isWorking ? 'En cours...' : '--'}</td>
                         <td><strong>${u.totalHours} h</strong></td>
                     </tr>
                 `;
@@ -621,12 +744,12 @@
             // Table Caisse
             const cBody = document.querySelector('#table-caisse tbody');
             cBody.innerHTML = "";
-            transactions.slice().reverse().forEach(t => {
+            transactions.slice(0, 100).forEach(t => { // Affiche les 100 dernières transactions pour la perf
                 cBody.innerHTML += `
                     <tr>
                         <td>${t.date}</td>
                         <td>${t.nom}</td>
-                        <td>Adhésion Annuelle</td>
+                        <td>Adhésion Annuelle 25/26</td>
                         <td style="color:var(--success)">+ 5,00 €</td>
                         <td><span class="badge badge-staff">${t.method}</span></td>
                     </tr>
@@ -635,47 +758,86 @@
         }
 
         function updateGlobalStats() {
-            const count = Object.keys(db_membres).length;
-            const ca = count * ADHESION_PRIX;
-            document.getElementById('val-ca').innerText = ca.toFixed(2) + " €";
-            document.getElementById('ca-total-display').innerText = ca.toFixed(2) + " €";
-            document.getElementById('val-adh').innerText = count;
-            
+            const counts = { "Adhérent": 0, "Bénévole": 0, "Staff": 0 };
+            const benevoles = [];
             let totalHrs = 0;
-            Object.values(db_membres).forEach(u => totalHrs += parseFloat(u.totalHours));
-            document.getElementById('val-hours').innerText = Math.floor(totalHrs) + "h";
-            document.getElementById('val-total-hours').innerText = Math.floor(totalHrs) + "h " + Math.round((totalHrs%1)*60) + "m";
+
+            Object.values(db_membres).forEach(u => {
+                counts[u.type] = (counts[u.type] || 0) + 1;
+                if(u.type === "Bénévole" || u.type === "Staff") {
+                    benevoles.push(u);
+                    totalHrs += parseFloat(u.totalHours);
+                }
+            });
+
+            const totalCount = counts["Adhérent"] + counts["Bénévole"] + counts["Staff"];
+            const ca = totalCount * ADHESION_PRIX;
+            
+            // Bénévole du Mois
+            let topBenevole = benevoles[0];
+            benevoles.forEach(u => {
+                if(parseFloat(u.totalHours) > parseFloat(topBenevole.totalHours) && u.type === "Bénévole") {
+                    topBenevole = u;
+                }
+            });
+
+            if(topBenevole) {
+                document.getElementById('top-benevole-name').innerText = topBenevole.nom;
+                document.getElementById('top-benevole-img').src = topBenevole.pic;
+                document.getElementById('top-benevole-hours').innerText = topBenevole.totalHours + " Heures cumulées";
+            }
+
+            // MAJ des chiffres
+            document.getElementById('stat-ca-total').innerText = ca.toFixed(2) + " €";
+            document.getElementById('stat-total-members').innerText = totalCount;
+            document.getElementById('stat-cumul-heures').innerText = Math.floor(totalHrs) + " h";
+            document.getElementById('stat-active-benevoles').innerText = counts["Bénévole"];
+            
+            document.getElementById('stat-avg-session').innerText = "2h 45m";
+            document.getElementById('stat-visits-today').innerText = Math.floor(Math.random()*20) + 45; // Chiffre dynamique réaliste
+            
+            if(document.getElementById('val-ca')) document.getElementById('val-ca').innerText = ca.toFixed(2) + " €";
+            if(document.getElementById('ca-total-display')) document.getElementById('ca-total-display').innerText = ca.toFixed(2) + " €";
+            if(document.getElementById('val-adh')) document.getElementById('val-adh').innerText = totalCount;
+            if(document.getElementById('val-hours')) document.getElementById('val-hours').innerText = Math.floor(totalHrs) + "h";
+
+            return counts; // Pour le graphique
         }
 
         // --- INITIALISATION ---
         window.onload = () => {
-            // Création de fausses transactions pour remplir la caisse
+            // Création de fausses transactions massives pour la caisse
             Object.values(db_membres).forEach((u, i) => {
+                let day = Math.floor(Math.random()*28)+1;
+                let method = Math.random() > 0.3 ? "CB" : "Espèces";
                 transactions.push({
-                    date: "1" + (i%9) + "/09/2025 14:05",
+                    date: `${day < 10 ? '0'+day : day}/09/2025 14:${Math.floor(Math.random()*50)+10}`,
                     nom: u.nom,
-                    method: i % 2 == 0 ? "Espèces" : "CB"
+                    method: method
                 });
             });
+            // Trier la caisse de la plus récente à la plus ancienne
+            transactions.sort((a,b) => b.date.localeCompare(a.date));
 
+            prefillLiveFeed();
             refreshAllTables();
-            updateGlobalStats();
+            const typeCounts = updateGlobalStats();
             startListening();
 
-            // Horloge digitale
+            // Horloge
             setInterval(() => {
                 document.getElementById('digital-clock').innerText = new Date().toLocaleTimeString();
             }, 1000);
 
-            // Graphique de répartition
+            // Graphique Dynamique basé sur la vraie DB
             const ctx = document.getElementById('chartType').getContext('2d');
             new Chart(ctx, {
                 type: 'doughnut',
                 data: {
                     labels: ['Adhérents', 'Bénévoles', 'Staff'],
                     datasets: [{
-                        data: [41, 8, 2],
-                        backgroundColor: ['#4361ee', '#ee5d50', '#05cd99'],
+                        data: [typeCounts["Adhérent"], typeCounts["Bénévole"], typeCounts["Staff"]],
+                        backgroundColor: ['#4361ee', '#ffb547', '#05cd99'],
                         borderWidth: 0,
                         hoverOffset: 10
                     }]
@@ -688,11 +850,8 @@
             });
         };
 
-        // Touche Echap
         window.addEventListener('keydown', (e) => {
             if(e.key === "Escape") toggleBorne(false);
         });
-
-    </script>
 </body>
 </html>
