@@ -9,148 +9,39 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
     <style>
-        /* ============================================================
-           1. ARCHITECTURE DES COULEURS ET VARIABLES (SAAS PREMIUM)
-           ============================================================ */
         :root {
-            --bg-main: #f0f2f9;
-            --side-bg: #ffffff;
-            --accent: #4361ee;
-            --accent-soft: rgba(67, 97, 238, 0.1);
-            --success: #05cd99;
-            --danger: #ee5d50;
-            --warning: #ffb547;
-            --dark-blue: #1b2559;
-            --text-primary: #2b3674;
-            --text-secondary: #a3aed0;
-            --border-color: #e0e5f2;
-            --card-shadow: 14px 17px 40px 4px rgba(112, 144, 176, 0.08);
-            --radius-lg: 20px;
-            --radius-md: 15px;
-            --anim-speed: 0.3s;
+            --bg-main: #f0f2f9; --side-bg: #ffffff; --accent: #4361ee;
+            --accent-soft: rgba(67, 97, 238, 0.1); --success: #05cd99;
+            --danger: #ee5d50; --warning: #ffb547; --dark-blue: #1b2559;
+            --text-primary: #2b3674; --text-secondary: #a3aed0;
+            --border-color: #e0e5f2; --card-shadow: 14px 17px 40px 4px rgba(112, 144, 176, 0.08);
+            --radius-lg: 20px; --radius-md: 15px; --anim-speed: 0.3s;
         }
 
-        /* Reset & Base */
         * { margin: 0; padding: 0; box-sizing: border-box; outline: none; }
-        body { 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-            background-color: var(--bg-main); 
-            color: var(--text-primary); 
-            height: 100vh; 
-            overflow: hidden; 
-            display: flex; 
-        }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg-main); color: var(--text-primary); height: 100vh; overflow: hidden; display: flex; }
 
-        /* ============================================================
-           2. NAVIGATION LATÉRALE (SIDEBAR)
-           ============================================================ */
-        .sidebar { 
-            width: 300px; 
-            background: var(--side-bg); 
-            height: 100vh; 
-            display: flex; 
-            flex-direction: column; 
-            padding: 40px 25px; 
-            border-right: 1px solid var(--border-color); 
-            z-index: 100; 
-            flex-shrink: 0; 
-        }
-        
-        .brand { 
-            display: flex; 
-            align-items: center; 
-            gap: 15px; 
-            margin-bottom: 60px; 
-            padding-left: 10px; 
-        }
-        .brand-img { 
-            width: 50px; 
-            height: 50px; 
-            border-radius: 12px; 
-            object-fit: cover; 
-            box-shadow: 0 8px 16px rgba(0,0,0,0.1); 
-        }
-        .brand-name { 
-            font-size: 1.5rem; 
-            font-weight: 800; 
-            color: var(--dark-blue); 
-            letter-spacing: -1px; 
-        }
+        .sidebar { width: 300px; background: var(--side-bg); height: 100vh; display: flex; flex-direction: column; padding: 40px 25px; border-right: 1px solid var(--border-color); z-index: 100; flex-shrink: 0; }
+        .brand { display: flex; align-items: center; gap: 15px; margin-bottom: 60px; padding-left: 10px; }
+        .brand-img { width: 50px; height: 50px; border-radius: 12px; object-fit: cover; box-shadow: 0 8px 16px rgba(0,0,0,0.1); }
+        .brand-name { font-size: 1.5rem; font-weight: 800; color: var(--dark-blue); letter-spacing: -1px; }
 
         .nav-list { flex: 1; list-style: none; }
-        .nav-item { 
-            display: flex; 
-            align-items: center; 
-            gap: 15px; 
-            padding: 18px; 
-            color: var(--text-secondary); 
-            font-weight: 700; 
-            border-radius: var(--radius-md); 
-            margin-bottom: 8px; 
-            cursor: pointer; 
-            transition: var(--anim-speed); 
-            border: 1px solid transparent; 
-        }
+        .nav-item { display: flex; align-items: center; gap: 15px; padding: 18px; color: var(--text-secondary); font-weight: 700; border-radius: var(--radius-md); margin-bottom: 8px; cursor: pointer; transition: var(--anim-speed); border: 1px solid transparent; }
         .nav-item i { font-size: 1.3rem; width: 25px; text-align: center; }
         .nav-item:hover { background: var(--bg-main); color: var(--accent); }
-        .nav-item.active { 
-            background: var(--accent-soft); 
-            color: var(--accent); 
-            border-color: rgba(67, 97, 238, 0.2); 
-        }
+        .nav-item.active { background: var(--accent-soft); color: var(--accent); border-color: rgba(67, 97, 238, 0.2); }
 
-        .btn-borne { 
-            background: var(--accent); 
-            color: white; 
-            margin-top: 30px; 
-            box-shadow: 0 10px 20px rgba(67, 97, 238, 0.3); 
-        }
+        .btn-borne { background: var(--accent); color: white; margin-top: 30px; box-shadow: 0 10px 20px rgba(67, 97, 238, 0.3); }
         .btn-borne:hover { background: var(--dark-blue); color: white; transform: translateY(-2px); }
 
-        /* ============================================================
-           3. ZONE DE CONTENU PRINCIPALE
-           ============================================================ */
         .main-container { flex: 1; display: flex; flex-direction: column; height: 100vh; overflow-y: auto; }
-        
-        .header-bar { 
-            padding: 30px 50px; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            position: sticky; 
-            top: 0; 
-            background: rgba(240, 242, 249, 0.8); 
-            backdrop-filter: blur(15px); 
-            z-index: 50; 
-        }
+        .header-bar { padding: 30px 50px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; background: rgba(240, 242, 249, 0.8); backdrop-filter: blur(15px); z-index: 50; }
         .header-info h1 { font-size: 2rem; font-weight: 800; color: var(--dark-blue); }
         
-        .system-status { 
-            padding: 12px 24px; 
-            background: white; 
-            border-radius: 50px; 
-            box-shadow: var(--card-shadow); 
-            display: flex; 
-            align-items: center; 
-            gap: 12px; 
-            font-weight: 700; 
-            font-size: 0.9rem; 
-        }
-        .pulse-dot { 
-            width: 12px; 
-            height: 12px; 
-            background: var(--success); 
-            border-radius: 50%; 
-            position: relative; 
-        }
-        .pulse-dot::after { 
-            content: ''; 
-            position: absolute; 
-            width: 100%; height: 100%; 
-            background: var(--success); 
-            border-radius: 50%; 
-            animation: pulse-ring 2s infinite; 
-        }
+        .system-status { padding: 12px 24px; background: white; border-radius: 50px; box-shadow: var(--card-shadow); display: flex; align-items: center; gap: 12px; font-weight: 700; font-size: 0.9rem; }
+        .pulse-dot { width: 12px; height: 12px; background: var(--success); border-radius: 50%; position: relative; }
+        .pulse-dot::after { content: ''; position: absolute; width: 100%; height: 100%; background: var(--success); border-radius: 50%; animation: pulse-ring 2s infinite; }
         @keyframes pulse-ring { 0% { transform: scale(1); opacity: 0.8; } 100% { transform: scale(3); opacity: 0; } }
 
         .view-content { padding: 0 50px 50px 50px; }
@@ -158,74 +49,32 @@
         .section-view.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* ============================================================
-           4. COMPOSANTS : CARTES, TABLES, GRAPHIQUES
-           ============================================================ */
         .grid-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 25px; margin-bottom: 40px; }
-        .stat-card { 
-            background: white; 
-            padding: 30px; 
-            border-radius: var(--radius-lg); 
-            box-shadow: var(--card-shadow); 
-            border: 1px solid transparent; 
-            transition: var(--anim-speed); 
-        }
+        .stat-card { background: white; padding: 30px; border-radius: var(--radius-lg); box-shadow: var(--card-shadow); border: 1px solid transparent; transition: var(--anim-speed); }
         .stat-card:hover { border-color: var(--accent); transform: translateY(-5px); }
-        .stat-card .icon { 
-            width: 60px; height: 60px; 
-            border-radius: 18px; 
-            display: flex; align-items: center; justify-content: center; 
-            font-size: 1.6rem; margin-bottom: 20px; 
-            background: var(--bg-main); color: var(--accent); 
-        }
-        .stat-card .value { font-size: 2.2rem; font-weight: 800; color: var(--dark-blue); }
+        .stat-card .val { font-size: 2.2rem; font-weight: 800; color: var(--dark-blue); }
         .stat-card .label { color: var(--text-secondary); font-weight: 600; margin-top: 5px; }
 
-        /* Correction de la grille du Dashboard */
-        .dashboard-layout { 
-            display: grid; 
-            grid-template-columns: 2fr 1fr; 
-            gap: 30px; 
-            align-items: start; /* Empêche l'étirement infini */
-        }
+        .grid-stats-expanded { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 30px; }
+        .volunteer-trophy { background: linear-gradient(135deg, #ff9f1c, #ffbf69); color: white; border-radius: var(--radius-lg); padding: 30px; display: flex; align-items: center; gap: 20px; position: relative; overflow: hidden; box-shadow: 0 10px 20px rgba(255, 159, 28, 0.3); grid-column: span 1; }
+        .volunteer-trophy i.fa-crown { position: absolute; right: -10px; bottom: -10px; font-size: 8rem; opacity: 0.2; transform: rotate(-15deg); }
+        .trophy-img { width: 80px; height: 80px; border-radius: 50%; border: 4px solid white; object-fit: cover; }
         
-        .box { 
-            background: white; 
-            border-radius: var(--radius-lg); 
-            padding: 30px; 
-            box-shadow: var(--card-shadow); 
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .box h3 { 
-            margin-bottom: 25px; 
-            font-size: 1.3rem; 
-            display: flex; 
-            align-items: center; 
-            gap: 10px; 
-        }
+        .mini-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; grid-column: span 2; }
+        .mini-card { background: white; padding: 20px; border-radius: var(--radius-md); box-shadow: var(--card-shadow); display: flex; flex-direction: column; justify-content: center; }
+        .mini-card .val { font-size: 1.4rem; font-weight: bold; color: var(--accent); }
 
-        /* Fixation des tailles pour empêcher le bug */
+        .dashboard-layout { display: grid; grid-template-columns: 2fr 1fr; gap: 30px; align-items: start; }
+        .box { background: white; border-radius: var(--radius-lg); padding: 30px; box-shadow: var(--card-shadow); display: flex; flex-direction: column; }
+        .box h3 { margin-bottom: 25px; font-size: 1.3rem; display: flex; align-items: center; gap: 10px; }
+        
         .feed-box { height: 450px; }
         .chart-box { height: 450px; }
-        
-        .scrollable-feed { 
-            flex: 1; 
-            overflow-y: auto; 
-            padding-right: 10px; 
-        }
+        .scrollable-feed { flex: 1; overflow-y: auto; padding-right: 10px; }
         .scrollable-feed::-webkit-scrollbar { width: 6px; }
         .scrollable-feed::-webkit-scrollbar-thumb { background: #e0e5f2; border-radius: 10px; }
+        .chart-container { position: relative; height: 100%; width: 100%; flex: 1; }
 
-        .chart-container { 
-            position: relative; /* Obligatoire pour Chart.js */
-            height: 100%; 
-            width: 100%; 
-            flex: 1;
-        }
-
-        /* Tables Pro */
         .table-wrap { overflow-x: auto; }
         table { width: 100%; border-collapse: separate; border-spacing: 0; }
         th { text-align: left; padding: 20px; color: var(--text-secondary); font-weight: 700; font-size: 0.85rem; text-transform: uppercase; border-bottom: 1px solid var(--border-color); }
@@ -234,90 +83,19 @@
 
         .user-info { display: flex; align-items: center; gap: 15px; }
         .user-avatar { width: 45px; height: 45px; border-radius: 14px; object-fit: cover; }
-        
         .badge { padding: 8px 16px; border-radius: 12px; font-size: 0.8rem; font-weight: 800; }
         .badge-active { background: #e6fffa; color: #00b5ad; }
         .badge-benevole { background: #fff5f5; color: #e53e3e; }
         .badge-staff { background: #ebf8ff; color: #3182ce; }
 
-
-/* Grille de KPIs étendue */
-        .grid-stats-expanded { 
-            display: grid; 
-            grid-template-columns: repeat(3, 1fr); 
-            gap: 20px; 
-            margin-bottom: 30px; 
-        }
-
-        /* Style spécifique pour le Bénévole du Mois */
-        .volunteer-trophy {
-            background: linear-gradient(135deg, #ff9f1c, #ffbf69);
-            color: white;
-            border-radius: var(--radius-lg);
-            padding: 30px;
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 10px 20px rgba(255, 159, 28, 0.3);
-            grid-column: span 1;
-        }
-        .volunteer-trophy i.fa-crown {
-            position: absolute;
-            right: -10px;
-            bottom: -10px;
-            font-size: 8rem;
-            opacity: 0.2;
-            transform: rotate(-15deg);
-        }
-        .trophy-img {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            border: 4px solid white;
-            object-fit: cover;
-        }
-
-        /* Petits indicateurs secondaires */
-        .mini-stats {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            grid-column: span 2;
-        }
-        .mini-card {
-            background: white;
-            padding: 20px;
-            border-radius: var(--radius-md);
-            box-shadow: var(--card-shadow);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-        .mini-card .val { font-size: 1.4rem; color: var(--accent); }
-
-        /* ============================================================
-           5. MODE BORNE AUTOMATIQUE (FULLSCREEN)
-           ============================================================ */
-        #borne-overlay { 
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: var(--dark-blue); z-index: 2000; 
-            display: none; flex-direction: column; align-items: center; justify-content: center; 
-            color: white; text-align: center; 
-        }
+        #borne-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--dark-blue); z-index: 2000; display: none; flex-direction: column; align-items: center; justify-content: center; color: white; text-align: center; }
         .borne-active { display: flex !important; animation: scaleUp 0.4s ease; }
         @keyframes scaleUp { from { transform: scale(1.1); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
         .borne-logo-large { width: 180px; height: 180px; border-radius: 40px; margin-bottom: 40px; animation: pulse-logo 2s infinite; }
         @keyframes pulse-logo { 0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255,255,255,0.4); } 70% { transform: scale(1.05); box-shadow: 0 0 0 30px rgba(255,255,255,0); } 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255,255,255,0); } }
 
-        .borne-card-success { 
-            background: white; color: var(--dark-blue); 
-            width: 700px; padding: 60px; border-radius: 50px; 
-            display: none; flex-direction: column; align-items: center; 
-            box-shadow: 0 30px 100px rgba(0,0,0,0.5); 
-        }
+        .borne-card-success { background: white; color: var(--dark-blue); width: 700px; padding: 60px; border-radius: 50px; display: none; flex-direction: column; align-items: center; box-shadow: 0 30px 100px rgba(0,0,0,0.5); }
         .borne-card-success.show { display: flex; animation: slideInUp 0.5s cubic-bezier(0.17, 0.89, 0.32, 1.49); }
         @keyframes slideInUp { from { transform: translateY(100px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
@@ -325,25 +103,10 @@
         .success-name { font-size: 3.5rem; font-weight: 900; margin-bottom: 10px; }
         .success-msg { font-size: 1.8rem; font-weight: 700; color: var(--success); text-transform: uppercase; letter-spacing: 3px; }
 
-        /* ============================================================
-           6. FEED EN DIRECT ET CAISSE
-           ============================================================ */
-        .feed-row { 
-            display: flex; align-items: center; gap: 15px; 
-            padding: 15px; background: #f9fbfd; 
-            border-radius: var(--radius-md); margin-bottom: 12px; 
-            animation: slideLeft 0.4s ease; 
-        }
-        @keyframes slideLeft { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
-
-        .ca-display { 
-            background: linear-gradient(135deg, var(--accent), var(--accent-light)); 
-            color: white; padding: 40px; border-radius: var(--radius-lg); 
-            text-align: center; margin-bottom: 30px; 
-        }
+        .feed-row { display: flex; align-items: center; gap: 15px; padding: 15px; background: #f9fbfd; border-radius: var(--radius-md); margin-bottom: 12px; }
+        .ca-display { background: linear-gradient(135deg, var(--accent), var(--accent-light)); color: white; padding: 40px; border-radius: var(--radius-lg); text-align: center; margin-bottom: 30px; }
         .ca-display h2 { font-size: 3.5rem; font-weight: 900; }
         .ca-display p { font-size: 1.2rem; opacity: 0.9; font-weight: 600; }
-
     </style>
 </head>
 <body>
@@ -355,21 +118,11 @@
         </div>
         
         <ul class="nav-list">
-            <li class="nav-item active" onclick="switchTab('dash-tab')">
-                <i class="fa-solid fa-chart-line"></i> Dashboard
-            </li>
-            <li class="nav-item" onclick="switchTab('members-tab')">
-                <i class="fa-solid fa-users-viewfinder"></i> Adhérents
-            </li>
-            <li class="nav-item" onclick="switchTab('benevoles-tab')">
-                <i class="fa-solid fa-handshake-angle"></i> Bénévoles
-            </li>
-            <li class="nav-item" onclick="switchTab('caisse-tab')">
-                <i class="fa-solid fa-cash-register"></i> Caisse & CA
-            </li>
-            <li class="nav-item btn-borne" onclick="toggleBorne(true)">
-                <i class="fa-solid fa-expand"></i> LANCER LA BORNE
-            </li>
+            <li class="nav-item active" onclick="switchTab('dash-tab')"><i class="fa-solid fa-chart-line"></i> Dashboard</li>
+            <li class="nav-item" onclick="switchTab('members-tab')"><i class="fa-solid fa-users-viewfinder"></i> Adhérents</li>
+            <li class="nav-item" onclick="switchTab('benevoles-tab')"><i class="fa-solid fa-handshake-angle"></i> Bénévoles</li>
+            <li class="nav-item" onclick="switchTab('caisse-tab')"><i class="fa-solid fa-cash-register"></i> Caisse & CA</li>
+            <li class="nav-item btn-borne" onclick="toggleBorne(true)"><i class="fa-solid fa-expand"></i> LANCER LA BORNE</li>
         </ul>
 
         <div style="background: var(--bg-main); padding: 25px; border-radius: var(--radius-md); text-align: center; margin-top: auto;">
@@ -380,9 +133,7 @@
 
     <div class="main-container">
         <header class="header-bar">
-            <div class="header-info">
-                <h1 id="tab-title">Dashboard</h1>
-            </div>
+            <div class="header-info"><h1 id="tab-title">Dashboard</h1></div>
             <div class="system-status">
                 <div class="pulse-dot"></div>
                 TERMINAL : <span style="color: var(--accent);">CASTRES-A1</span>
@@ -392,7 +143,6 @@
         <div class="view-content">
             
             <section id="dash-tab" class="section-view active">
-                
                 <div class="grid-stats-expanded">
                     <div class="volunteer-trophy">
                         <i class="fa-solid fa-crown"></i>
@@ -403,44 +153,19 @@
                             <p id="top-benevole-hours" style="font-weight: 800; font-size: 1.1rem;"></p>
                         </div>
                     </div>
-
                     <div class="mini-stats">
-                        <div class="mini-card">
-                            <div class="label"><i class="fa-solid fa-euro-sign"></i> CA Total</div>
-                            <div class="val" id="stat-ca-total">--</div>
-                        </div>
-                        <div class="mini-card">
-                            <div class="label"><i class="fa-solid fa-users"></i> Adhérents</div>
-                            <div class="val" id="stat-total-members">--</div>
-                        </div>
-                        <div class="mini-card">
-                            <div class="label"><i class="fa-solid fa-stopwatch"></i> Cumul Heures</div>
-                            <div class="val" id="stat-cumul-heures">--</div>
-                        </div>
-                        <div class="mini-card">
-                            <div class="label"><i class="fa-solid fa-arrow-trend-up"></i> Croissance</div>
-                            <div class="val" style="color: var(--success)">+ 12%</div>
-                        </div>
+                        <div class="mini-card"><div class="label"><i class="fa-solid fa-euro-sign"></i> CA Total</div><div class="val" id="stat-ca-total">--</div></div>
+                        <div class="mini-card"><div class="label"><i class="fa-solid fa-users"></i> Adhérents</div><div class="val" id="stat-total-members">--</div></div>
+                        <div class="mini-card"><div class="label"><i class="fa-solid fa-stopwatch"></i> Cumul Heures</div><div class="val" id="stat-cumul-heures">--</div></div>
+                        <div class="mini-card"><div class="label"><i class="fa-solid fa-arrow-trend-up"></i> Croissance</div><div class="val" style="color: var(--success)">+ 12%</div></div>
                     </div>
                 </div>
 
                 <div class="grid-stats" style="margin-top:0;">
-                    <div class="stat-card">
-                        <div class="val" id="stat-avg-session">--</div>
-                        <div class="label">Session Moyenne</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="val" id="stat-visits-today">--</div>
-                        <div class="label">Passages Aujourd'hui</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="val" id="stat-active-benevoles">--</div>
-                        <div class="label">Bénévoles ce mois</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="val">5,00 €</div>
-                        <div class="label">Tarif Adhésion</div>
-                    </div>
+                    <div class="stat-card"><div class="val" id="stat-avg-session">--</div><div class="label">Session Moyenne</div></div>
+                    <div class="stat-card"><div class="val" id="stat-visits-today">--</div><div class="label">Passages Aujourd'hui</div></div>
+                    <div class="stat-card"><div class="val" id="stat-active-benevoles">--</div><div class="label">Bénévoles ce mois</div></div>
+                    <div class="stat-card"><div class="val">5,00 €</div><div class="label">Tarif Adhésion</div></div>
                 </div>
 
                 <div class="dashboard-layout">
@@ -450,39 +175,31 @@
                     </div>
                     <div class="box chart-box">
                         <h3><i class="fa-solid fa-chart-pie"></i> Répartition</h3>
-                        <div class="chart-container">
-                            <canvas id="chartType"></canvas>
-                        </div>
+                        <div class="chart-container"><canvas id="chartType"></canvas></div>
                     </div>
                 </div>
             </section>
 
-
-            <section id="benevoles-tab" class="section-view">
-                <div class="grid-stats">
-                    <div class="stat-card">
-                        <div class="icon"><i class="fa-solid fa-user-clock"></i></div>
-                        <div class="value">8</div>
-                        <div class="label">Bénévoles Actifs</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="icon" style="color: var(--success);"><i class="fa-solid fa-stopwatch"></i></div>
-                        <div class="value" id="val-total-hours">142h 30m</div>
-                        <div class="label">Cumul Annuel</div>
+            <section id="members-tab" class="section-view">
+                <div class="box">
+                    <div class="table-wrap">
+                        <table id="table-members">
+                            <thead>
+                                <tr><th>Membre</th><th>UID NFC</th><th>Adhésion</th><th>Visites</th><th>Dernier passage</th></tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
                     </div>
                 </div>
+            </section>
+
+            <section id="benevoles-tab" class="section-view">
                 <div class="box">
                     <h3><i class="fa-solid fa-list-check"></i> Pointage des Bénévoles</h3>
                     <div class="table-wrap">
                         <table id="table-benevoles">
                             <thead>
-                                <tr>
-                                    <th>Bénévole</th>
-                                    <th>Statut Actuel</th>
-                                    <th>Début Service</th>
-                                    <th>Temps Session</th>
-                                    <th>Total Cumulé</th>
-                                </tr>
+                                <tr><th>Bénévole</th><th>Statut Actuel</th><th>Début Service</th><th>Temps Session</th><th>Total Cumulé</th></tr>
                             </thead>
                             <tbody></tbody>
                         </table>
@@ -493,21 +210,15 @@
             <section id="caisse-tab" class="section-view">
                 <div class="ca-display">
                     <p>CHIFFRE D'AFFAIRES TOTAL (2025/2026)</p>
-                    <h2 id="ca-total-display">255,00 €</h2>
-                    <p>Basé sur 51 adhésions annuelles de 5,00 €</p>
+                    <h2 id="ca-total-display">--</h2>
+                    <p>Basé sur une adhésion annuelle de 5,00 €</p>
                 </div>
                 <div class="box">
                     <h3><i class="fa-solid fa-receipt"></i> Journal des Paiements</h3>
                     <div class="table-wrap">
                         <table id="table-caisse">
                             <thead>
-                                <tr>
-                                    <th>Date & Heure</th>
-                                    <th>Adhérent</th>
-                                    <th>Désignation</th>
-                                    <th>Montant</th>
-                                    <th>Méthode</th>
-                                </tr>
+                                <tr><th>Date & Heure</th><th>Adhérent</th><th>Désignation</th><th>Montant</th><th>Méthode</th></tr>
                             </thead>
                             <tbody></tbody>
                         </table>
@@ -520,40 +231,36 @@
 
     <div id="borne-overlay">
         <button onclick="toggleBorne(false)" style="position:absolute; top:40px; right:40px; background:rgba(255,255,255,0.1); border:none; color:white; padding:15px 30px; border-radius:15px; cursor:pointer; font-weight:800;">QUITTER (ECHAP)</button>
-        
         <div id="borne-idle">
             <img src="logo_petit_plus.jpeg" alt="Petit Plus" class="borne-logo-large">
             <h1 style="font-size: 5rem; font-weight: 900; margin-bottom: 20px;">BORNE ACTIVE</h1>
             <p style="font-size: 2.5rem; opacity: 0.7; font-weight: 500;">Scanner votre carte pour entrer</p>
         </div>
-
         <div id="borne-success-card" class="borne-card-success">
             <img src="" id="s-img" class="success-img">
             <div id="s-msg" class="success-msg">Accès Autorisé</div>
             <h2 id="s-name" class="success-name">--</h2>
-            <p id="s-info" style="font-size: 1.5rem; color: var(--text-secondary); font-weight: 700;">Adhérent à jour • 5,00€ payés</p>
+            <p id="s-info" style="font-size: 1.5rem; color: var(--text-secondary); font-weight: 700;">Adhérent à jour</p>
         </div>
     </div>
 
     <script>
-        // --- CONFIGURATION & DONNÉES MASSIVES ---
         const nfcTopic = "le_petit_plus_demo_castres";
         const ADHESION_PRIX = 5;
 
-        // Génération de 250 membres pour remplir massivement l'application
-        const firstNames = ["Léo", "Manon", "Gabriel", "Jade", "Lucas", "Emma", "Louis", "Léa", "Hugo", "Chloé", "Nathan", "Mila", "Enzo", "Alice", "Liam", "Ambre", "Mael", "Ines", "Noah", "Lola", "Arthur", "Juliette", "Paul", "Sarah", "Victor", "Clara"];
-        const lastNames = ["Martin", "Bernard", "Thomas", "Petit", "Robert", "Richard", "Durand", "Dubois", "Moreau", "Laurent", "Simon", "Michel", "Lefebvre", "Leroy", "Roux", "David", "Bertrand", "Morel", "Fournier", "Girard"];
+        // Génération de 250 membres pour remplir massivement
+        const firstNames = ["Léo", "Manon", "Gabriel", "Jade", "Lucas", "Emma", "Louis", "Léa", "Hugo", "Chloé", "Nathan", "Mila", "Enzo", "Alice", "Liam", "Ambre", "Mael", "Ines", "Noah", "Lola", "Arthur", "Juliette"];
+        const lastNames = ["Martin", "Bernard", "Thomas", "Petit", "Robert", "Richard", "Durand", "Dubois", "Moreau", "Laurent", "Simon", "Michel", "Lefebvre", "Leroy", "Roux"];
         
         let db_membres = {
             "04:A1:B2:C3:D4": { nom: "Roman L.", pic: "https://i.pravatar.cc/150?u=roman", type: "Adhérent", status: "badge-active", paye: true, date: "10/09/2025", visits: 42, totalHours: 0, isWorking: false },
             "E0:04:01:09:09:15:C0:06": { nom: "Staff Petit Plus", pic: "https://i.pravatar.cc/150?u=staff", type: "Staff", status: "badge-staff", paye: true, date: "01/09/2025", visits: 156, totalHours: 142.5, isWorking: false }
         };
 
-        // Remplissage automatique de 250 personnes
         for(let i=0; i<250; i++) {
             let uid = `ID-${10000+i}`;
-            let isBenevole = i < 35; // 35 bénévoles
-            let isStaff = i >= 35 && i < 40; // 5 membres du staff
+            let isBenevole = i < 35; 
+            let isStaff = i >= 35 && i < 40; 
             
             let type = isStaff ? "Staff" : (isBenevole ? "Bénévole" : "Adhérent");
             let status = isStaff ? "badge-staff" : (isBenevole ? "badge-benevole" : "badge-active");
@@ -561,20 +268,17 @@
             db_membres[uid] = {
                 nom: firstNames[Math.floor(Math.random()*firstNames.length)] + " " + lastNames[Math.floor(Math.random()*lastNames.length)],
                 pic: `https://i.pravatar.cc/150?u=user${i+50}`,
-                type: type,
-                status: status,
-                paye: true,
+                type: type, status: status, paye: true,
                 date: `0${Math.floor(Math.random()*9)+1}/09/2025`,
                 visits: Math.floor(Math.random()*80) + 2,
                 totalHours: isBenevole ? (Math.random()*180 + 15).toFixed(1) : 0,
-                isWorking: Math.random() > 0.8 && isBenevole, // Quelques bénévoles actuellement en service
+                isWorking: Math.random() > 0.8 && isBenevole,
                 startTime: null
             };
         }
 
         let transactions = [];
 
-        // --- LOGIQUE DE NAVIGATION ---
         function switchTab(id) {
             document.querySelectorAll('.section-view').forEach(v => v.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
@@ -589,7 +293,6 @@
             else b.classList.remove('borne-active');
         }
 
-        // --- MOTEUR DE SCAN NFC ---
         function startListening() {
             fetch(`https://ntfy.sh/${nfcTopic}/json`)
                 .then(response => {
@@ -626,9 +329,7 @@
 
             const user = db_membres[uid];
             if(user) {
-                if(user.type === "Bénévole" || user.type === "Staff") {
-                    handleBenevoleTime(user);
-                }
+                if(user.type === "Bénévole" || user.type === "Staff") handleBenevoleTime(user);
                 user.visits++;
                 showBorneSuccess(user);
                 logVisit(user, new Date().toLocaleTimeString());
@@ -640,18 +341,14 @@
         function handleBenevoleTime(user) {
             const now = new Date();
             if(!user.isWorking) {
-                user.isWorking = true;
-                user.startTime = now;
+                user.isWorking = true; user.startTime = now;
             } else {
-                // S'il était déjà en service (simulation), on ajoute 2h par défaut pour la démo
                 let addedHrs = user.startTime ? (now - user.startTime)/(1000*60*60) : 2.5; 
                 user.totalHours = (parseFloat(user.totalHours) + addedHrs).toFixed(1);
-                user.isWorking = false;
-                user.startTime = null;
+                user.isWorking = false; user.startTime = null;
             }
         }
 
-        // --- AFFICHAGE & UI ---
         function showBorneSuccess(user) {
             const idle = document.getElementById('borne-idle');
             const card = document.getElementById('borne-success-card');
@@ -669,14 +366,10 @@
                 document.getElementById('s-info').innerText = "Adhérent à jour • 5,00€ payés";
             }
 
-            idle.style.display = 'none';
-            card.classList.add('show');
+            idle.style.display = 'none'; card.classList.add('show');
             new Audio('https://assets.mixkit.co/active_storage/sfx/2358/2358-preview.mp3').play();
 
-            setTimeout(() => {
-                card.classList.remove('show');
-                idle.style.display = 'block';
-            }, 3500);
+            setTimeout(() => { card.classList.remove('show'); idle.style.display = 'block'; }, 3500);
         }
 
         function logVisit(user, timeStr, opacity = 1) {
@@ -684,102 +377,45 @@
             const html = `
                 <div class="feed-row" style="opacity: ${opacity}">
                     <img src="${user.pic}" class="user-avatar" style="width:35px; height:35px">
-                    <div style="flex:1">
-                        <strong>${user.nom}</strong><br>
-                        <small>${user.type}</small>
-                    </div>
+                    <div style="flex:1"><strong>${user.nom}</strong><br><small>${user.type}</small></div>
                     <div style="font-weight:800; color:var(--accent)">${timeStr}</div>
-                </div>
-            `;
+                </div>`;
             feed.insertAdjacentHTML('afterbegin', html);
         }
 
-        function prefillLiveFeed() {
-            // Prendre 15 utilisateurs au hasard pour simuler les passages récents
-            let recentUsers = Object.values(db_membres).sort(() => 0.5 - Math.random()).slice(0, 15);
-            let now = new Date();
-            
-            recentUsers.forEach((user, index) => {
-                let pastTime = new Date(now.getTime() - (index * 12 * 60000)); // Un passage toutes les 12 min
-                let timeString = pastTime.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-                let opacity = 1 - (index * 0.05); // Les plus anciens sont plus clairs
-                logVisit(user, timeString, opacity);
-            });
-        }
-
         function refreshAllTables() {
-            // Table Adhérents
-            const mBody = document.querySelector('#table-members tbody');
-            mBody.innerHTML = "";
+            const mBody = document.querySelector('#table-members tbody'); mBody.innerHTML = "";
             Object.entries(db_membres).forEach(([uid, u]) => {
-                mBody.innerHTML += `
-                    <tr>
-                        <td><div class="user-info"><img src="${u.pic}" class="user-avatar" loading="lazy"><strong>${u.nom}</strong></div></td>
-                        <td><code>${uid.substring(0,8)}...</code></td>
-                        <td><span class="badge ${u.status}">${u.type}</span></td>
-                        <td>${u.visits} visites</td>
-                        <td>Récemment</td>
-                    </tr>
-                `;
+                mBody.innerHTML += `<tr><td><div class="user-info"><img src="${u.pic}" class="user-avatar" loading="lazy"><strong>${u.nom}</strong></div></td><td><code>${uid.substring(0,8)}...</code></td><td><span class="badge ${u.status}">${u.type}</span></td><td>${u.visits} visites</td><td>Récemment</td></tr>`;
             });
 
-            // Table Bénévoles & Staff (Triés par heures décroissantes)
-            const bBody = document.querySelector('#table-benevoles tbody');
-            bBody.innerHTML = "";
+            const bBody = document.querySelector('#table-benevoles tbody'); bBody.innerHTML = "";
             let workers = Object.values(db_membres).filter(u => u.type === "Bénévole" || u.type === "Staff");
-            workers.sort((a, b) => parseFloat(b.totalHours) - parseFloat(a.totalHours)); // Le premier a le plus d'heures
-
+            workers.sort((a, b) => parseFloat(b.totalHours) - parseFloat(a.totalHours));
             workers.forEach(u => {
-                bBody.innerHTML += `
-                    <tr>
-                        <td><strong>${u.nom}</strong></td>
-                        <td><span class="badge ${u.isWorking ? 'badge-active' : ''}">${u.isWorking ? '● EN SERVICE' : 'OFF'}</span></td>
-                        <td>${u.isWorking ? '14:00' : '--:--'}</td>
-                        <td>${u.isWorking ? 'En cours...' : '--'}</td>
-                        <td><strong>${u.totalHours} h</strong></td>
-                    </tr>
-                `;
+                bBody.innerHTML += `<tr><td><strong>${u.nom}</strong></td><td><span class="badge ${u.isWorking ? 'badge-active' : ''}">${u.isWorking ? '● EN SERVICE' : 'OFF'}</span></td><td>${u.isWorking ? '14:00' : '--:--'}</td><td>${u.isWorking ? 'En cours...' : '--'}</td><td><strong>${u.totalHours} h</strong></td></tr>`;
             });
 
-            // Table Caisse
-            const cBody = document.querySelector('#table-caisse tbody');
-            cBody.innerHTML = "";
-            transactions.slice(0, 100).forEach(t => { // Affiche les 100 dernières transactions pour la perf
-                cBody.innerHTML += `
-                    <tr>
-                        <td>${t.date}</td>
-                        <td>${t.nom}</td>
-                        <td>Adhésion Annuelle 25/26</td>
-                        <td style="color:var(--success)">+ 5,00 €</td>
-                        <td><span class="badge badge-staff">${t.method}</span></td>
-                    </tr>
-                `;
+            const cBody = document.querySelector('#table-caisse tbody'); cBody.innerHTML = "";
+            transactions.slice(0, 100).forEach(t => {
+                cBody.innerHTML += `<tr><td>${t.date}</td><td>${t.nom}</td><td>Adhésion Annuelle 25/26</td><td style="color:var(--success)">+ 5,00 €</td><td><span class="badge badge-staff">${t.method}</span></td></tr>`;
             });
         }
 
         function updateGlobalStats() {
             const counts = { "Adhérent": 0, "Bénévole": 0, "Staff": 0 };
-            const benevoles = [];
-            let totalHrs = 0;
+            const benevoles = []; let totalHrs = 0;
 
             Object.values(db_membres).forEach(u => {
                 counts[u.type] = (counts[u.type] || 0) + 1;
-                if(u.type === "Bénévole" || u.type === "Staff") {
-                    benevoles.push(u);
-                    totalHrs += parseFloat(u.totalHours);
-                }
+                if(u.type === "Bénévole" || u.type === "Staff") { benevoles.push(u); totalHrs += parseFloat(u.totalHours); }
             });
 
             const totalCount = counts["Adhérent"] + counts["Bénévole"] + counts["Staff"];
             const ca = totalCount * ADHESION_PRIX;
             
-            // Bénévole du Mois
             let topBenevole = benevoles[0];
-            benevoles.forEach(u => {
-                if(parseFloat(u.totalHours) > parseFloat(topBenevole.totalHours) && u.type === "Bénévole") {
-                    topBenevole = u;
-                }
-            });
+            benevoles.forEach(u => { if(parseFloat(u.totalHours) > parseFloat(topBenevole.totalHours) && u.type === "Bénévole") topBenevole = u; });
 
             if(topBenevole) {
                 document.getElementById('top-benevole-name').innerText = topBenevole.nom;
@@ -787,71 +423,41 @@
                 document.getElementById('top-benevole-hours').innerText = topBenevole.totalHours + " Heures cumulées";
             }
 
-            // MAJ des chiffres
             document.getElementById('stat-ca-total').innerText = ca.toFixed(2) + " €";
             document.getElementById('stat-total-members').innerText = totalCount;
             document.getElementById('stat-cumul-heures').innerText = Math.floor(totalHrs) + " h";
             document.getElementById('stat-active-benevoles').innerText = counts["Bénévole"];
-            
             document.getElementById('stat-avg-session').innerText = "2h 45m";
-            document.getElementById('stat-visits-today').innerText = Math.floor(Math.random()*20) + 45; // Chiffre dynamique réaliste
+            document.getElementById('stat-visits-today').innerText = Math.floor(Math.random()*20) + 45; 
             
-            if(document.getElementById('val-ca')) document.getElementById('val-ca').innerText = ca.toFixed(2) + " €";
-            if(document.getElementById('ca-total-display')) document.getElementById('ca-total-display').innerText = ca.toFixed(2) + " €";
-            if(document.getElementById('val-adh')) document.getElementById('val-adh').innerText = totalCount;
-            if(document.getElementById('val-hours')) document.getElementById('val-hours').innerText = Math.floor(totalHrs) + "h";
-
-            return counts; // Pour le graphique
+            document.getElementById('ca-total-display').innerText = ca.toFixed(2) + " €";
+            return counts;
         }
 
-        // --- INITIALISATION ---
         window.onload = () => {
-            // Création de fausses transactions massives pour la caisse
             Object.values(db_membres).forEach((u, i) => {
                 let day = Math.floor(Math.random()*28)+1;
-                let method = Math.random() > 0.3 ? "CB" : "Espèces";
-                transactions.push({
-                    date: `${day < 10 ? '0'+day : day}/09/2025 14:${Math.floor(Math.random()*50)+10}`,
-                    nom: u.nom,
-                    method: method
-                });
+                transactions.push({ date: `${day < 10 ? '0'+day : day}/09/2025 14:${Math.floor(Math.random()*50)+10}`, nom: u.nom, method: Math.random() > 0.3 ? "CB" : "Espèces" });
             });
-            // Trier la caisse de la plus récente à la plus ancienne
             transactions.sort((a,b) => b.date.localeCompare(a.date));
 
-            prefillLiveFeed();
+            let recentUsers = Object.values(db_membres).sort(() => 0.5 - Math.random()).slice(0, 15);
+            recentUsers.forEach((user, index) => logVisit(user, new Date(new Date().getTime() - (index * 12 * 60000)).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}), 1 - (index * 0.05)));
+
             refreshAllTables();
             const typeCounts = updateGlobalStats();
             startListening();
 
-            // Horloge
-            setInterval(() => {
-                document.getElementById('digital-clock').innerText = new Date().toLocaleTimeString();
-            }, 1000);
+            setInterval(() => { document.getElementById('digital-clock').innerText = new Date().toLocaleTimeString(); }, 1000);
 
-            // Graphique Dynamique basé sur la vraie DB
-            const ctx = document.getElementById('chartType').getContext('2d');
-            new Chart(ctx, {
+            new Chart(document.getElementById('chartType').getContext('2d'), {
                 type: 'doughnut',
-                data: {
-                    labels: ['Adhérents', 'Bénévoles', 'Staff'],
-                    datasets: [{
-                        data: [typeCounts["Adhérent"], typeCounts["Bénévole"], typeCounts["Staff"]],
-                        backgroundColor: ['#4361ee', '#ffb547', '#05cd99'],
-                        borderWidth: 0,
-                        hoverOffset: 10
-                    }]
-                },
-                options: { 
-                    maintainAspectRatio: false, 
-                    plugins: { legend: { position: 'bottom' } },
-                    cutout: '75%'
-                }
+                data: { labels: ['Adhérents', 'Bénévoles', 'Staff'], datasets: [{ data: [typeCounts["Adhérent"], typeCounts["Bénévole"], typeCounts["Staff"]], backgroundColor: ['#4361ee', '#ffb547', '#05cd99'], borderWidth: 0 }] },
+                options: { maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } }, cutout: '75%' }
             });
         };
 
-        window.addEventListener('keydown', (e) => {
-            if(e.key === "Escape") toggleBorne(false);
-        });
+        window.addEventListener('keydown', (e) => { if(e.key === "Escape") toggleBorne(false); });
+    </script>
 </body>
 </html>
