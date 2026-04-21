@@ -75,33 +75,38 @@
             document.getElementById('view-title').innerText = viewId.toUpperCase();
         }
 
-        // --- CONFIGURATION DU PONT SANS FIL (MQTT) ---
-        const topic = "lepetitplus/demo/votre_nom_unique"; // Change "votre_nom_unique" par ton nom
-        const client = new Paho.MQTT.Client("broker.hivemq.com", 8000, "client_" + Math.random());
+        // --- CONFIGURATION DU PONT SANS FIL SÉCURISÉ ---
+const topic = "lepetitplus/demo/roman_unique_2026"; // Un nom bien à toi
+const client = new Paho.MQTT.Client("broker.hivemq.com", 8884, "client_" + Math.random());
 
-        client.onConnectionLost = (responseObject) => { console.log("Perdu"); };
-        client.onMessageArrived = (message) => {
-            console.log("Message reçu: " + message.payloadString);
-            triggerScanUI(message.payloadString);
-        };
+client.onConnectionLost = (responseObject) => { 
+    console.log("Connexion perdue, tentative de reconconnexion..."); 
+};
 
-        client.connect({ onSuccess: () => {
-            console.log("Connecté au pont");
-            document.getElementById('conn-status').style.color = "var(--primary)";
-            document.getElementById('conn-status').innerHTML = '<i class="fa-solid fa-circle"></i> Pont Connecté';
-            client.subscribe(topic);
-            
-            // SI C'EST LE TEL QUI SCANNE (il y a ?type dans l'URL)
-            const params = new URLSearchParams(window.location.search);
-            const type = params.get('type');
-            if(type) {
-                const msg = new Paho.MQTT.Message(type);
-                msg.destinationName = topic;
-                client.send(msg);
-                // Sur le tel, on affiche juste un petit message de succès
-                document.body.innerHTML = "<h1 style='padding:50px; text-align:center;'>✅ Scan envoyé à l'ordi !</h1>";
-            }
-        }, useSSL: false });
+client.onMessageArrived = (message) => {
+    triggerScanUI(message.payloadString);
+};
+
+// CONFIGURATION SÉCURISÉE (SSL: TRUE / PORT: 8884)
+client.connect({ 
+    onSuccess: () => {
+        console.log("Connecté au pont !");
+        document.getElementById('conn-status').style.color = "var(--primary)";
+        document.getElementById('conn-status').innerHTML = '<i class="fa-solid fa-circle"></i> Pont Connecté';
+        client.subscribe(topic);
+        
+        const params = new URLSearchParams(window.location.search);
+        const type = params.get('type');
+        if(type) {
+            const msg = new Paho.MQTT.Message(type);
+            msg.destinationName = topic;
+            client.send(msg);
+            document.body.innerHTML = "<div style='height:100vh; display:flex; flex-direction:column; justify-content:center; align-items:center; background:#27ae60; color:white; font-family:sans-serif;'><h1>✅ SCAN RÉUSSI</h1><p>Vérifiez l'écran de l'ordinateur</p></div>";
+        }
+    }, 
+    useSSL: true, // IMPORTANT : On passe en sécurisé
+    timeout: 3
+});
 
         function triggerScanUI(type) {
             showView('scan');
