@@ -5,90 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Le Petit Plus | Management Suite</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.min.js"></script>
     <style>
-        :root {
-            --primary: #27ae60;
-            --secondary: #2c3e50;
-            --sidebar-width: 260px;
-            --bg: #f8f9fa;
-            --white: #ffffff;
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        :root { --primary: #27ae60; --secondary: #2c3e50; --sidebar-width: 260px; --bg: #f8f9fa; --white: #ffffff; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
         body { display: flex; height: 100vh; background: var(--bg); overflow: hidden; }
-
-        /* SIDEBAR */
-        .sidebar {
-            width: var(--sidebar-width);
-            background: var(--secondary);
-            color: white;
-            display: flex;
-            flex-direction: column;
-            transition: all 0.3s;
-        }
+        .sidebar { width: var(--sidebar-width); background: var(--secondary); color: white; display: flex; flex-direction: column; }
         .sidebar-header { padding: 30px 20px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); }
         .sidebar-header img { width: 60px; border-radius: 12px; margin-bottom: 10px; }
-        
         .nav-links { list-style: none; padding: 20px 0; flex: 1; }
-        .nav-item {
-            padding: 15px 25px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            cursor: pointer;
-            color: #bdc3c7;
-            transition: 0.2s;
-        }
+        .nav-item { padding: 15px 25px; display: flex; align-items: center; gap: 15px; cursor: pointer; color: #bdc3c7; transition: 0.2s; }
         .nav-item:hover, .nav-item.active { background: rgba(255,255,255,0.1); color: white; border-left: 4px solid var(--primary); }
-        .nav-item i { width: 20px; font-size: 1.1rem; }
-
-        /* MAIN CONTENT */
         .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
-        .topbar {
-            height: 70px;
-            background: var(--white);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 30px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-        }
-
+        .topbar { height: 70px; background: var(--white); display: flex; align-items: center; justify-content: space-between; padding: 0 30px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
         .view-section { padding: 30px; display: none; height: calc(100vh - 70px); overflow-y: auto; }
-        .view-section.active { display: block; animation: fadeIn 0.3s; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* KPI CARDS */
-        .grid-kpi { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px; }
-        .card-kpi { background: var(--white); padding: 20px; border-radius: 15px; display: flex; align-items: center; gap: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
-        .icon-box { width: 50px; height: 50px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
-
-        /* TABLES & BADGES */
-        .data-table { width: 100%; background: var(--white); border-radius: 15px; overflow: hidden; border-collapse: collapse; margin-top: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
-        .data-table th { background: #f1f2f6; padding: 15px; text-align: left; font-size: 0.8rem; color: #7f8c8d; text-transform: uppercase; }
-        .data-table td { padding: 15px; border-bottom: 1px solid #f1f2f6; }
-        
+        .view-section.active { display: block; }
         .status-pill { padding: 5px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; }
         .paid { background: #e8f8f5; color: #27ae60; }
-        .unpaid { background: #fdedec; color: #e74c3c; }
-        
-        /* Badges de paiement */
-        .pay-cb { background: #ebf5fb; color: #2980b9; }
-        .pay-cash { background: #e8f8f5; color: #27ae60; }
-        .pay-check { background: #fef5e7; color: #d35400; }
-        .pay-vir { background: #f5eef8; color: #8e44ad; }
-
-        /* CHART CONTAINER */
-        .chart-container { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); margin-bottom: 30px; }
-
-        /* SCAN OVERLAY */
-        .scan-result {
-            background: white; border-radius: 20px; padding: 40px; text-align: center;
-            max-width: 500px; margin: 50px auto; box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-        }
+        .scan-result { background: white; border-radius: 20px; padding: 40px; text-align: center; max-width: 500px; margin: 30px auto; box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
         .scan-photo { width: 150px; height: 150px; border-radius: 50%; border: 5px solid var(--primary); margin-bottom: 20px; }
-
     </style>
 </head>
 <body>
@@ -100,9 +35,6 @@
         </div>
         <ul class="nav-links">
             <li class="nav-item active" onclick="showView('dash')"><i class="fa-solid fa-gauge"></i> Tableau de bord</li>
-            <li class="nav-item" onclick="showView('adh')"><i class="fa-solid fa-users"></i> Adhérents</li>
-            <li class="nav-item" onclick="showView('ben')"><i class="fa-solid fa-user-shield"></i> Bénévoles</li>
-            <li class="nav-item" onclick="showView('caisse')"><i class="fa-solid fa-file-invoice-dollar"></i> Livre de Caisse</li>
             <li class="nav-item" onclick="showView('scan')"><i class="fa-solid fa-qrcode"></i> Pointage Live</li>
         </ul>
     </nav>
@@ -110,198 +42,84 @@
     <div class="main">
         <div class="topbar">
             <h2 id="view-title">Tableau de bord</h2>
-            <div style="color: var(--primary)"><i class="fa-solid fa-circle"></i> Lecteur NFC Connecté</div>
+            <div id="conn-status" style="color: orange;"><i class="fa-solid fa-circle"></i> Connexion au pont...</div>
         </div>
 
         <div id="view-dash" class="view-section active">
-            <div class="grid-kpi">
-                <div class="card-kpi">
-                    <div class="icon-box" style="background:#e8f8f5; color:#27ae60"><i class="fa-solid fa-user-graduate"></i></div>
-                    <div><h4>245</h4><p>Étudiants</p></div>
-                </div>
-                <div class="card-kpi">
-                    <div class="icon-box" style="background:#ebf5fb; color:#3498db"><i class="fa-solid fa-heart"></i></div>
-                    <div><h4>18</h4><p>Bénévoles</p></div>
-                </div>
-            </div>
-            <h3>Activité récente</h3>
-            <table class="data-table">
-                <thead><tr><th>Heure</th><th>Nom</th><th>Type</th><th>Statut</th></tr></thead>
-                <tbody>
-                    <tr><td>16:45</td><td>Jean Dupont</td><td>Adhérent</td><td><span class="status-pill paid">Accès Validé</span></td></tr>
-                    <tr><td>16:30</td><td>Marie Curie</td><td>Bénévole</td><td><span class="status-pill paid">Entrée Staff</span></td></tr>
-                </tbody>
-            </table>
-        </div>
-
-        <div id="view-adh" class="view-section">
-            <div style="display:flex; justify-content:space-between; align-items:center">
-                <h3>Liste des Adhérents (245)</h3>
-                <button style="padding:10px; background:var(--primary); color:white; border:none; border-radius:8px">+ Nouvel Adhérent</button>
-            </div>
-            <table class="data-table">
-                <thead><tr><th>Nom</th><th>Promotion</th><th>Cotisation</th><th>Dernier Scan</th></tr></thead>
-                <tbody>
-                    <tr><td>Alice Smith</td><td>BUT Info G1</td><td><span class="status-pill paid">À Jour</span></td><td>Aujourd'hui</td></tr>
-                    <tr><td>Bob Razowski</td><td>BUT MMI G2</td><td><span class="status-pill unpaid">À régler</span></td><td>05/03/24</td></tr>
-                </tbody>
-            </table>
-        </div>
-
-        <div id="view-ben" class="view-section">
-            <h3>Gestion des Bénévoles</h3>
-            <table class="data-table">
-                <thead><tr><th>Bénévole</th><th>Heures ce mois</th><th>Dernière Entrée</th><th>Action</th></tr></thead>
-                <tbody>
-                    <tr><td>Sarah Martin</td><td>12h 30min</td><td>16:30</td><td><button>Détails</button></td></tr>
-                </tbody>
-            </table>
-        </div>
-
-        <div id="view-caisse" class="view-section">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px;">
-                <h3>Comptabilité & Adhésions</h3>
-                <button style="padding:10px; background:#2c3e50; color:white; border:none; border-radius:8px"><i class="fa-solid fa-download"></i> Exporter Excel</button>
-            </div>
-
-            <div class="grid-kpi">
-                <div class="card-kpi">
-                    <div class="icon-box" style="background:#e8f8f5; color:#27ae60"><i class="fa-solid fa-vault"></i></div>
-                    <div><h4 style="font-size: 1.5rem;">2 450 €</h4><p>Total Récolté (Année)</p></div>
-                </div>
-                <div class="card-kpi">
-                    <div class="icon-box" style="background:#ebf5fb; color:#3498db"><i class="fa-solid fa-credit-card"></i></div>
-                    <div><h4 style="font-size: 1.5rem;">65%</h4><p>Paiements par CB</p></div>
-                </div>
-                <div class="card-kpi">
-                    <div class="icon-box" style="background:#fef5e7; color:#f39c12"><i class="fa-solid fa-coins"></i></div>
-                    <div><h4 style="font-size: 1.5rem;">25%</h4><p>Paiements en Espèces</p></div>
-                </div>
-            </div>
-
-            <div class="chart-container">
-                <h4 style="margin-bottom: 15px; color: #7f8c8d;">Adhésions par mois (Revenus en €)</h4>
-                <canvas id="financeChart" height="80"></canvas>
-            </div>
-
-            <h3>Historique des encaissements</h3>
-            <table class="data-table">
-                <thead><tr><th>Date & Heure</th><th>Étudiant</th><th>Montant</th><th>Moyen de Paiement</th><th>Validé par</th></tr></thead>
-                <tbody>
-                    <tr>
-                        <td>Aujourd'hui - 10:15</td>
-                        <td><strong>Lucas Martin</strong></td>
-                        <td style="font-weight: bold; color: var(--primary);">+ 10,00 €</td>
-                        <td><span class="status-pill pay-cb"><i class="fa-regular fa-credit-card"></i> Carte Bancaire</span></td>
-                        <td>Sarah (Bénévole)</td>
-                    </tr>
-                    <tr>
-                        <td>Hier - 14:30</td>
-                        <td><strong>Emma Bernard</strong></td>
-                        <td style="font-weight: bold; color: var(--primary);">+ 10,00 €</td>
-                        <td><span class="status-pill pay-cash"><i class="fa-solid fa-money-bill"></i> Espèces</span></td>
-                        <td>Thomas (Bénévole)</td>
-                    </tr>
-                    <tr>
-                        <td>Lundi - 09:05</td>
-                        <td><strong>Julien Leroy</strong></td>
-                        <td style="font-weight: bold; color: var(--primary);">+ 10,00 €</td>
-                        <td><span class="status-pill pay-vir"><i class="fa-solid fa-building-columns"></i> Virement</span></td>
-                        <td>Sarah (Bénévole)</td>
-                    </tr>
-                    <tr>
-                        <td>Vendredi - 16:20</td>
-                        <td><strong>Léa Rousseau</strong></td>
-                        <td style="font-weight: bold; color: var(--primary);">+ 10,00 €</td>
-                        <td><span class="status-pill pay-check"><i class="fa-solid fa-money-check-pen"></i> Chèque</span></td>
-                        <td>Thomas (Bénévole)</td>
-                    </tr>
-                </tbody>
-            </table>
+            <h1>Bienvenue sur le logiciel</h1>
+            <p>En attente d'activité...</p>
         </div>
 
         <div id="view-scan" class="view-section">
-            <div class="scan-result" id="scan-container">
+            <div class="scan-result">
                 <div id="scan-loader">
                     <i class="fa-solid fa-spinner fa-spin" style="font-size: 3rem; color: var(--primary)"></i>
                     <h2 style="margin-top:20px">En attente d'un scan NFC...</h2>
-                    <p style="color:#7f8c8d; margin-top:10px;">Posez une carte sur le lecteur USB</p>
+                    <p>Scannez une carte avec votre téléphone</p>
                 </div>
                 <div id="scan-data" style="display:none">
-                    <img src="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&q=80&w=400" class="scan-photo" id="p-img">
-                    <h1 id="p-name">Chargement...</h1>
+                    <img src="" class="scan-photo" id="p-img">
+                    <h1 id="p-name"></h1>
                     <p id="p-role" style="font-weight:bold; color:#7f8c8d; margin-bottom:20px"></p>
-                    <div id="p-status" class="status-pill" style="font-size:1.2rem; display:inline-block"></div>
-                    <div style="margin-top:30px; text-align:left; background:#f8f9fa; padding:15px; border-radius:10px">
-                        <p><strong>UID Carte :</strong> <span id="p-uid"></span></p>
-                        <p><strong>Heure de passage :</strong> <span id="p-time"></span></p>
-                    </div>
+                    <div id="p-status" class="status-pill paid" style="font-size:1.2rem; display:inline-block"></div>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        // Initialisation du graphique Chart.js
-        document.addEventListener('DOMContentLoaded', function() {
-            const ctx = document.getElementById('financeChart').getContext('2d');
-            new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: ['Septembre', 'Octobre', 'Novembre', 'Décembre', 'Janvier', 'Février', 'Mars', 'Avril'],
-                    datasets: [{
-                        label: 'Revenus des Adhésions (€)',
-                        data: [1200, 450, 150, 50, 300, 100, 80, 120],
-                        backgroundColor: '#2ecc71',
-                        borderRadius: 8,
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: { legend: { display: false } },
-                    scales: { y: { beginAtZero: true } }
-                }
-            });
-        });
-
-        // Navigation entre les onglets
         function showView(viewId) {
             document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-            
             document.getElementById('view-' + viewId).classList.add('active');
-            
-            const titles = {dash: 'Tableau de bord', adh: 'Liste des Adhérents', ben: 'Gestion des Bénévoles', caisse: 'Livre de Caisse & Compta', scan: 'Scanner NFC en direct'};
-            document.getElementById('view-title').innerText = titles[viewId];
+            document.getElementById('view-title').innerText = viewId.toUpperCase();
         }
 
-        // DETECTION AUTOMATIQUE DU SCAN PAR L'URL
-        window.onload = () => {
-            const params = new URLSearchParams(window.location.search);
-            const userType = params.get('type');
+        // --- CONFIGURATION DU PONT SANS FIL (MQTT) ---
+        const topic = "lepetitplus/demo/votre_nom_unique"; // Change "votre_nom_unique" par ton nom
+        const client = new Paho.MQTT.Client("broker.hivemq.com", 8000, "client_" + Math.random());
 
-            if(userType) {
-                showView('scan');
-                document.getElementById('scan-loader').style.display = 'none';
-                document.getElementById('scan-data').style.display = 'block';
-
-                if(userType === 'adherent') {
-                    document.getElementById('p-name').innerText = "Thomas Dubois";
-                    document.getElementById('p-role').innerText = "Étudiant Adhérent";
-                    document.getElementById('p-uid').innerText = "04:A1:B2:C3";
-                    document.getElementById('p-status').innerText = "✅ ADHÉSION VALIDE";
-                    document.getElementById('p-status').className = "status-pill paid";
-                } else {
-                    document.getElementById('p-name').innerText = "Marie Dupont";
-                    document.getElementById('p-role').innerText = "Bénévole (Staff)";
-                    document.getElementById('p-uid').innerText = "E0:04:01:09:09:15:C0:06";
-                    document.getElementById('p-status').innerText = "🕒 POINTAGE ENTRÉE RÉUSSI";
-                    document.getElementById('p-status').className = "status-pill paid";
-                    document.getElementById('p-img').src = "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=400";
-                }
-                document.getElementById('p-time').innerText = new Date().toLocaleTimeString();
-            }
+        client.onConnectionLost = (responseObject) => { console.log("Perdu"); };
+        client.onMessageArrived = (message) => {
+            console.log("Message reçu: " + message.payloadString);
+            triggerScanUI(message.payloadString);
         };
+
+        client.connect({ onSuccess: () => {
+            console.log("Connecté au pont");
+            document.getElementById('conn-status').style.color = "var(--primary)";
+            document.getElementById('conn-status').innerHTML = '<i class="fa-solid fa-circle"></i> Pont Connecté';
+            client.subscribe(topic);
+            
+            // SI C'EST LE TEL QUI SCANNE (il y a ?type dans l'URL)
+            const params = new URLSearchParams(window.location.search);
+            const type = params.get('type');
+            if(type) {
+                const msg = new Paho.MQTT.Message(type);
+                msg.destinationName = topic;
+                client.send(msg);
+                // Sur le tel, on affiche juste un petit message de succès
+                document.body.innerHTML = "<h1 style='padding:50px; text-align:center;'>✅ Scan envoyé à l'ordi !</h1>";
+            }
+        }, useSSL: false });
+
+        function triggerScanUI(type) {
+            showView('scan');
+            document.getElementById('scan-loader').style.display = 'none';
+            document.getElementById('scan-data').style.display = 'block';
+
+            if(type === 'adherent') {
+                document.getElementById('p-name').innerText = "Thomas Dubois";
+                document.getElementById('p-role').innerText = "Étudiant Adhérent";
+                document.getElementById('p-status').innerText = "✅ ADHÉSION VALIDE";
+                document.getElementById('p-img').src = "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&q=80&w=400";
+            } else {
+                document.getElementById('p-name').innerText = "Marie Dupont";
+                document.getElementById('p-role').innerText = "Bénévole (Staff)";
+                document.getElementById('p-status').innerText = "🕒 POINTAGE ENTRÉE RÉUSSI";
+                document.getElementById('p-img').src = "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=400";
+            }
+        }
     </script>
 </body>
 </html>
