@@ -251,60 +251,43 @@
     </div>
 
     <script>
-        // Effet Waw : Le faux scan d'une seconde au lancement
-        window.onload = () => {
-            setTimeout(() => {
-                document.getElementById('scan-screen').style.opacity = '0';
-                setTimeout(() => {
-                    document.getElementById('scan-screen').style.display = 'none';
-                    document.getElementById('app').style.display = 'flex';
-                }, 500);
-            }, 1200); // 1.2 secondes de radar avant d'afficher la carte
-        };
+        // Remplace 'demo-epicerie-ton-prenom' par un mot unique à toi (sans espaces)
+const canalSecret = 'demo-epicerie-nfc-2026'; 
 
-        // Gestion des fenêtres (Modals)
-        function openModal(id) {
-            document.getElementById(id).classList.add('active');
-        }
-        function closeModal(id) {
-            document.getElementById(id).classList.remove('active');
-        }
+// Cacher l'application au démarrage
+document.getElementById('app').style.display = 'none';
+document.getElementById('scan-screen').style.display = 'none';
 
-        // Fausse sauvegarde pour impressionner le client
-        function saveProfile() {
-            // Récupère les nouvelles valeurs
-            const newName = document.getElementById('input-name').value;
-            const newExpiry = document.getElementById('input-expiry').value;
-            const newStatus = document.getElementById('input-status').value;
+// Créer un écran d'attente
+const waitingDiv = document.createElement('div');
+waitingDiv.innerHTML = '<i class="fa-solid fa-wifi" style="font-size:3rem; color:#ccc; margin-bottom:20px;"></i><br><h2 style="color:#777;">En attente de scan...</h2><p style="color:#aaa;">Veuillez badger votre carte</p>';
+waitingDiv.style.cssText = 'text-align:center; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%);';
+document.body.appendChild(waitingDiv);
 
-            // Met à jour l'affichage
-            document.getElementById('display-name').innerText = newName;
-            document.getElementById('display-expiry').innerText = newExpiry;
+// L'ordinateur "écoute" le canal secret
+const eventSource = new EventSource(`https://ntfy.sh/${canalSecret}/sse`);
 
-            // Gère la couleur et le texte du badge selon le statut
-            const badge = document.getElementById('main-status');
-            const profileImg = document.querySelector('.profile-img');
+eventSource.onmessage = (event) => {
+    // Si on reçoit un signal vide (ping de connexion), on ignore
+    if(event.data === "ping") return;
 
-            if(newStatus === 'valide') {
-                badge.style.background = 'var(--green)';
-                badge.innerHTML = '<i class="fa-solid fa-circle-check"></i> ADHÉSION À JOUR';
-                profileImg.style.borderColor = 'var(--green)';
-            } else {
-                badge.style.background = 'var(--red)';
-                badge.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> ADHÉSION EXPIRÉE';
-                profileImg.style.borderColor = 'var(--red)';
-            }
-
-            // Ferme la fenêtre et fait un petit effet
-            closeModal('edit-modal');
-            
-            // Ajoute une ligne dans l'historique en direct !
-            const timeline = document.querySelector('.timeline');
-            const newItem = document.createElement('li');
-            newItem.className = 'timeline-item';
-            newItem.innerHTML = `<div class="time-date">À l'instant</div><div class="time-action">Mise à jour du profil (Bénévole)</div>`;
-            timeline.insertBefore(newItem, timeline.firstChild);
-        }
+    // QUAND LE TÉLÉPHONE SCANNE :
+    // 1. On cache l'écran d'attente
+    waitingDiv.style.display = 'none';
+    
+    // 2. On lance l'animation Radar Magique
+    document.getElementById('scan-screen').style.display = 'flex';
+    document.getElementById('scan-screen').style.opacity = '1';
+    
+    // 3. Après 1.2 secondes, on affiche le profil de Thomas
+    setTimeout(() => {
+        document.getElementById('scan-screen').style.opacity = '0';
+        setTimeout(() => {
+            document.getElementById('scan-screen').style.display = 'none';
+            document.getElementById('app').style.display = 'flex';
+        }, 500);
+    }, 1200);
+};
     </script>
 </body>
 </html>s
