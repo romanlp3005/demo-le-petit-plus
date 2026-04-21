@@ -2,82 +2,88 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard NFC - Le Petit Plus</title>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f8f9fa; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .container { background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); text-align: center; width: 90%; max-width: 450px; border-top: 5px solid #28a745; }
-        img { max-width: 120px; margin-bottom: 1rem; }
-        .profile { display: none; animation: fadeIn 0.5s; }
-        .badge { display: inline-block; padding: 5px 15px; border-radius: 20px; font-weight: bold; margin-bottom: 15px; }
-        .student { background: #e2f3e5; color: #28a745; }
-        .staff { background: #e7f3ff; color: #007bff; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        body { font-family: sans-serif; text-align: center; background: #f0f2f5; padding: 50px; }
+        .card { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); display: inline-block; min-width: 300px; }
+        .status { padding: 5px 15px; border-radius: 20px; font-weight: bold; color: white; }
+        .student { background: #28a745; }
+        .staff { background: #007bff; }
+        #profile { display: none; margin-top: 20px; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <img src="logo_petit_plus.jpeg" alt="Logo Le Petit Plus">
-    <h1>Système NFC</h1>
-    
-    <div id="waiting">
-        <p style="color: #666;">📡 En attente d'un scan sur le téléphone...</p>
-    </div>
+<div class="card">
+    <h1>🚀 Le Petit Plus</h1>
+    <p id="waiting">📡 Prêt ! Scannez une carte avec le téléphone...</p>
 
-    <div id="profile" class="profile">
-        <div id="badge-type" class="badge">--</div>
-        <h2 id="user-name" style="margin: 0;">--</h2>
-        <p id="user-uid" style="color: #888; font-size: 0.8rem;">UID: --</p>
-        <hr>
-        <p><strong>Solde/Info :</strong> <span id="user-info">--</span></p>
-        <button onclick="location.reload()" style="margin-top:15px; padding:8px 15px; cursor:pointer;">Réinitialiser</button>
+    <div id="profile">
+        <div id="badge" class="status"></div>
+        <h2 id="name"></h2>
+        <p>UID : <span id="uid-val"></span></p>
+        <p><strong>Solde :</strong> <span id="solde"></span></p>
     </div>
 </div>
 
 <script>
-    // 1. CONFIGURATION (Remplace avec tes clés Supabase si tu en crée un, sinon utilise ces placeholders pour le test)
-    const SUPABASE_URL = 'https://VOTRE_PROJET.supabase.co';
-    const SUPABASE_KEY = 'VOTRE_CLE_ANON';
-    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-    // 2. TA BASE DE DONNÉES LOCALE
+    // Ta base de données locale
     const membres = {
-        "04:A1:B2:C3:D4": { nom: "Roman L. (Étudiant)", type: "Adhérent", classe: "student", info: "12,50 €" },
-        "E0:04:01:09:09:15:C0:06": { nom: "Staff Petit Plus", type: "Membre Staff", classe: "staff", info: "Accès Admin" }
+        "04:A1:B2:C3:D4": { nom: "Roman L.", type: "Adhérent", classe: "student", solde: "12,50 €" },
+        "E0:04:01:09:09:15:C0:06": { nom: "Staff Petit Plus", type: "Staff", classe: "staff", solde: "Illimité" }
     };
 
-    // 3. ÉCOUTE DU SCAN (TEMPS RÉEL)
-    // Dès qu'une nouvelle ligne est ajoutée dans la table "scans" par ton téléphone...
-    supabase
-        .channel('public:scans')
-        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'scans' }, payload => {
-            const uid = payload.new.uid;
-            afficherProfil(uid);
-        })
-        .subscribe();
+    // ON ÉCOUTE LA BOÎTE AUX LETTRES (ntfy.sh)
+    // "le_petit_plus_demo" est le nom de ta boîte (tu peux le changer par un truc secret)
+    const topic = "le_petit_plus_demo_castres"; 
+    
+    function ecouterScan() {
+        fetch(`https://ntfy.sh/${topic}/json`)
+            .then(response => {
+                const reader = response.body.getReader();
+                return new ReadableStream({
+                    start(controller) {
+                        function push() {
+                            reader.read().then(({ done, value }) => {
+                                if (done) return;
+                                const chunk = new TextDecoder().decode(value);
+                                const lines = chunk.split('\n');
+                                lines.forEach(line => {
+                                    if (line) {
+                                        const data = JSON.parse(line);
+                                        if (data.event === "message") {
+                                            afficherProfil(data.message);
+                                        }
+                                    }
+                                });
+                                push();
+                            });
+                        }
+                        push();
+                    }
+                });
+            });
+    }
 
     function afficherProfil(uid) {
         const user = membres[uid];
         document.getElementById('waiting').style.display = 'none';
-        const p = document.getElementById('profile');
-        p.style.display = 'block';
+        document.getElementById('profile').style.display = 'block';
         
         if (user) {
-            document.getElementById('user-name').innerText = user.nom;
-            document.getElementById('user-uid').innerText = "UID: " + uid;
-            document.getElementById('user-info').innerText = user.info;
-            document.getElementById('badge-type').innerText = user.type;
-            document.getElementById('badge-type').className = "badge " + user.classe;
-            // Optionnel : Petit son de succès
-            new Audio('https://assets.mixkit.co/active_storage/sfx/2358/2358-preview.mp3').play();
+            document.getElementById('name').innerText = user.nom;
+            document.getElementById('uid-val').innerText = uid;
+            document.getElementById('solde').innerText = user.solde;
+            document.getElementById('badge').innerText = user.type;
+            document.getElementById('badge').className = "status " + user.classe;
         } else {
-            document.getElementById('user-name').innerText = "Carte Inconnue";
-            document.getElementById('user-uid').innerText = uid;
-            document.getElementById('badge-type').innerText = "ERREUR";
+            document.getElementById('name').innerText = "Inconnu";
+            document.getElementById('uid-val').innerText = uid;
+            document.getElementById('badge').innerText = "ERREUR";
         }
     }
+
+    ecouterScan(); // Lancer l'écoute
 </script>
 </body>
 </html>
