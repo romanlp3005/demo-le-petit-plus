@@ -3,128 +3,67 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Le Petit Plus | Management Suite</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <title>Démo NFC - Le Petit Plus</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.min.js"></script>
     <style>
-        :root { --primary: #27ae60; --secondary: #2c3e50; --sidebar-width: 260px; --bg: #f8f9fa; --white: #ffffff; }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
-        body { display: flex; height: 100vh; background: var(--bg); overflow: hidden; }
-        .sidebar { width: var(--sidebar-width); background: var(--secondary); color: white; display: flex; flex-direction: column; }
-        .sidebar-header { padding: 30px 20px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); }
-        .sidebar-header img { width: 60px; border-radius: 12px; margin-bottom: 10px; }
-        .nav-links { list-style: none; padding: 20px 0; flex: 1; }
-        .nav-item { padding: 15px 25px; display: flex; align-items: center; gap: 15px; cursor: pointer; color: #bdc3c7; transition: 0.2s; }
-        .nav-item:hover, .nav-item.active { background: rgba(255,255,255,0.1); color: white; border-left: 4px solid var(--primary); }
-        .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
-        .topbar { height: 70px; background: var(--white); display: flex; align-items: center; justify-content: space-between; padding: 0 30px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .view-section { padding: 30px; display: none; height: calc(100vh - 70px); overflow-y: auto; }
-        .view-section.active { display: block; }
-        .status-pill { padding: 5px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; }
-        .paid { background: #e8f8f5; color: #27ae60; }
-        .scan-result { background: white; border-radius: 20px; padding: 40px; text-align: center; max-width: 500px; margin: 30px auto; box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
-        .scan-photo { width: 150px; height: 150px; border-radius: 50%; border: 5px solid var(--primary); margin-bottom: 20px; }
+        body { font-family: sans-serif; text-align: center; background: #f0f2f5; padding-top: 50px; }
+        .card { background: white; width: 300px; margin: 0 auto; padding: 20px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        .photo { width: 100px; height: 100px; border-radius: 50%; background: #eee; margin-bottom: 15px; }
+        .status { padding: 10px; border-radius: 10px; font-weight: bold; margin-top: 15px; }
+        .valid { background: #e8f8f5; color: #27ae60; }
+        #conn-status { font-size: 0.8rem; margin-bottom: 20px; color: orange; }
     </style>
 </head>
 <body>
 
-    <nav class="sidebar">
-        <div class="sidebar-header">
-            <img src="logo_petit_plus.jpeg" alt="Logo" onerror="this.src='https://via.placeholder.com/60'">
-            <h3>Le Petit Plus</h3>
-        </div>
-        <ul class="nav-links">
-            <li class="nav-item active" onclick="showView('dash')"><i class="fa-solid fa-gauge"></i> Tableau de bord</li>
-            <li class="nav-item" onclick="showView('scan')"><i class="fa-solid fa-qrcode"></i> Pointage Live</li>
-        </ul>
-    </nav>
+    <div id="conn-status">Connexion au pont...</div>
 
-    <div class="main">
-        <div class="topbar">
-            <h2 id="view-title">Tableau de bord</h2>
-            <div id="conn-status" style="color: orange;"><i class="fa-solid fa-circle"></i> Connexion au pont...</div>
-        </div>
+    <div id="view-waiting">
+        <h1>Système de Pointage</h1>
+        <p>En attente d'un scan NFC...</p>
+        <div style="font-size: 5rem; margin-top: 20px;">📱</div>
+    </div>
 
-        <div id="view-dash" class="view-section active">
-            <h1>Bienvenue sur le logiciel</h1>
-            <p>En attente d'activité...</p>
+    <div id="view-result" style="display:none;">
+        <div class="card">
+            <img src="https://via.placeholder.com/100" class="photo">
+            <h2 id="p-name">Thomas Dubois</h2>
+            <p>Étudiant Adhérent</p>
+            <div class="status valid">✅ ADHÉSION VALIDE</div>
         </div>
-
-        <div id="view-scan" class="view-section">
-            <div class="scan-result">
-                <div id="scan-loader">
-                    <i class="fa-solid fa-spinner fa-spin" style="font-size: 3rem; color: var(--primary)"></i>
-                    <h2 style="margin-top:20px">En attente d'un scan NFC...</h2>
-                    <p>Scannez une carte avec votre téléphone</p>
-                </div>
-                <div id="scan-data" style="display:none">
-                    <img src="" class="scan-photo" id="p-img">
-                    <h1 id="p-name"></h1>
-                    <p id="p-role" style="font-weight:bold; color:#7f8c8d; margin-bottom:20px"></p>
-                    <div id="p-status" class="status-pill paid" style="font-size:1.2rem; display:inline-block"></div>
-                </div>
-            </div>
-        </div>
+        <button onclick="window.location.reload()" style="margin-top:20px; padding:10px; cursor:pointer;">Réinitialiser</button>
     </div>
 
     <script>
-        function showView(viewId) {
-            document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-            document.getElementById('view-' + viewId).classList.add('active');
-            document.getElementById('view-title').innerText = viewId.toUpperCase();
-        }
+        // --- CONFIGURATION DU PONT ---
+        // Change "roman123" par n'importe quoi d'autre pour que ton pont soit unique
+        const topic = "lepetitplus/demo/roman123"; 
+        const client = new Paho.MQTT.Client("broker.hivemq.com", 8884, "client_" + Math.random());
 
-        // --- CONFIGURATION DU PONT SANS FIL SÉCURISÉ ---
-const topic = "lepetitplus/demo/roman_unique_2026"; // Un nom bien à toi
-const client = new Paho.MQTT.Client("broker.hivemq.com", 8884, "client_" + Math.random());
+        client.onMessageArrived = (message) => {
+            // Quand l'ordinateur reçoit le signal "scan"
+            document.getElementById('view-waiting').style.display = 'none';
+            document.getElementById('view-result').style.display = 'block';
+        };
 
-client.onConnectionLost = (responseObject) => { 
-    console.log("Connexion perdue, tentative de reconconnexion..."); 
-};
-
-client.onMessageArrived = (message) => {
-    triggerScanUI(message.payloadString);
-};
-
-// CONFIGURATION SÉCURISÉE (SSL: TRUE / PORT: 8884)
-client.connect({ 
-    onSuccess: () => {
-        console.log("Connecté au pont !");
-        document.getElementById('conn-status').style.color = "var(--primary)";
-        document.getElementById('conn-status').innerHTML = '<i class="fa-solid fa-circle"></i> Pont Connecté';
-        client.subscribe(topic);
-        
-        const params = new URLSearchParams(window.location.search);
-        const type = params.get('type');
-        if(type) {
-            const msg = new Paho.MQTT.Message(type);
-            msg.destinationName = topic;
-            client.send(msg);
-            document.body.innerHTML = "<div style='height:100vh; display:flex; flex-direction:column; justify-content:center; align-items:center; background:#27ae60; color:white; font-family:sans-serif;'><h1>✅ SCAN RÉUSSI</h1><p>Vérifiez l'écran de l'ordinateur</p></div>";
-        }
-    }, 
-    useSSL: true, // IMPORTANT : On passe en sécurisé
-    timeout: 3
-});
-
-        function triggerScanUI(type) {
-            showView('scan');
-            document.getElementById('scan-loader').style.display = 'none';
-            document.getElementById('scan-data').style.display = 'block';
-
-            if(type === 'adherent') {
-                document.getElementById('p-name').innerText = "Thomas Dubois";
-                document.getElementById('p-role').innerText = "Étudiant Adhérent";
-                document.getElementById('p-status').innerText = "✅ ADHÉSION VALIDE";
-                document.getElementById('p-img').src = "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&q=80&w=400";
-            } else {
-                document.getElementById('p-name').innerText = "Marie Dupont";
-                document.getElementById('p-role').innerText = "Bénévole (Staff)";
-                document.getElementById('p-status').innerText = "🕒 POINTAGE ENTRÉE RÉUSSI";
-                document.getElementById('p-img').src = "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=400";
+        client.connect({ 
+            useSSL: true, 
+            onSuccess: () => {
+                document.getElementById('conn-status').innerText = "Pont Connecté ●";
+                document.getElementById('conn-status').style.color = "green";
+                client.subscribe(topic);
+                
+                // SI C'EST LE TEL QUI OUVRE LE LIEN AVEC ?scan=1
+                const params = new URLSearchParams(window.location.search);
+                if(params.get('scan')) {
+                    const message = new Paho.MQTT.Message("scan");
+                    message.destinationName = topic;
+                    client.send(message);
+                    // Message sur le téléphone
+                    document.body.innerHTML = "<h1 style='color:green; padding:50px;'>✅ SCAN ENVOYÉ !</h1><p>Regardez l'ordinateur.</p>";
+                }
             }
-        }
+        });
     </script>
 </body>
 </html>
