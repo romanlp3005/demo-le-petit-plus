@@ -2,42 +2,55 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard NFC - Le Petit Plus</title>
     <style>
-        body { font-family: sans-serif; text-align: center; background: #f0f2f5; padding: 50px; }
-        .card { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); display: inline-block; min-width: 300px; }
-        .status { padding: 5px 15px; border-radius: 20px; font-weight: bold; color: white; }
-        .student { background: #28a745; }
-        .staff { background: #007bff; }
-        #profile { display: none; margin-top: 20px; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .container { background: white; padding: 2rem; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); text-align: center; width: 90%; max-width: 400px; border-top: 8px solid #28a745; }
+        .logo { font-size: 3rem; margin-bottom: 10px; }
+        .status { display: inline-block; padding: 6px 18px; border-radius: 20px; font-weight: bold; margin-bottom: 15px; text-transform: uppercase; font-size: 0.8rem; }
+        .student { background: #d4edda; color: #155724; }
+        .staff { background: #cce5ff; color: #004085; }
+        .error { background: #f8d7da; color: #721c24; }
+        #profile { display: none; animation: slideUp 0.4s ease-out; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        hr { border: 0; border-top: 1px solid #eee; margin: 20px 0; }
+        button { background: #28a745; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        button:hover { background: #218838; }
     </style>
 </head>
 <body>
 
-<div class="card">
-    <h1>🚀 Le Petit Plus</h1>
-    <p id="waiting">📡 Prêt ! Scannez une carte avec le téléphone...</p>
+<div class="container">
+    <div class="logo">🚀</div>
+    <h1 style="margin: 0 0 10px 0; color: #333;">Le Petit Plus</h1>
+    
+    <div id="waiting">
+        <p style="color: #666;">📡 En attente d'un scan NFC...</p>
+        <div style="font-size: 0.8rem; color: #999; margin-top: 10px;">Scannez avec votre téléphone</div>
+    </div>
 
     <div id="profile">
         <div id="badge" class="status"></div>
-        <h2 id="name"></h2>
-        <p>UID : <span id="uid-val"></span></p>
-        <p><strong>Solde :</strong> <span id="solde"></span></p>
+        <h2 id="name" style="margin: 5px 0;"></h2>
+        <p id="uid-display" style="color: #888; font-family: monospace; font-size: 0.9rem;"></p>
+        <hr>
+        <p style="font-size: 1.1rem;"><strong>Solde :</strong> <span id="solde" style="color: #28a745; font-weight: bold;"></span></p>
+        <button onclick="resetDashboard()">Prêt pour suivant</button>
     </div>
 </div>
 
 <script>
-    // Ta base de données locale
+    // 1. TA BASE DE DONNÉES
     const membres = {
-        "04:A1:B2:C3:D4": { nom: "Roman L.", type: "Adhérent", classe: "student", solde: "12,50 €" },
-        "E0:04:01:09:09:15:C0:06": { nom: "Staff Petit Plus", type: "Staff", classe: "staff", solde: "Illimité" }
+        "04:A1:B2:C3:D4": { nom: "Roman L.", type: "Adhérent (Étudiant)", classe: "student", solde: "12,50 €" },
+        "E0:04:01:09:09:15:C0:06": { nom: "Staff Petit Plus", type: "Membre (Staff)", classe: "staff", solde: "Illimité" }
     };
 
-    // ON ÉCOUTE LA BOÎTE AUX LETTRES (ntfy.sh)
-    // "le_petit_plus_demo" est le nom de ta boîte (tu peux le changer par un truc secret)
+    // 2. CONFIGURATION DE LA RÉCEPTION (ntfy.sh)
     const topic = "le_petit_plus_demo_castres"; 
-    
-    function ecouterScan() {
+
+    function ecouterLeTelephone() {
         fetch(`https://ntfy.sh/${topic}/json`)
             .then(response => {
                 const reader = response.body.getReader();
@@ -49,11 +62,13 @@
                                 const chunk = new TextDecoder().decode(value);
                                 const lines = chunk.split('\n');
                                 lines.forEach(line => {
-                                    if (line) {
-                                        const data = JSON.parse(line);
-                                        if (data.event === "message") {
-                                            afficherProfil(data.message);
-                                        }
+                                    if (line.trim()) {
+                                        try {
+                                            const data = JSON.parse(line);
+                                            if (data.event === "message") {
+                                                traiterUID(data.message);
+                                            }
+                                        } catch (e) { console.error("Erreur lecture message"); }
                                     }
                                 });
                                 push();
@@ -65,38 +80,47 @@
             });
     }
 
-    function afficherProfil(messageRecu) {
-    // Cette ligne nettoie le message si le téléphone envoie du JSON
-    // Elle enlève les { } " : et garde juste l'ID
-    let uid = messageRecu.replace(/[{}":]/g, "").trim();
-    
-    // Si après nettoyage il reste du vide à droite (cas du {"ID":""})
-    if (uid.includes("")) { uid = uid.split('')[0]; } // Optionnel selon le tel
-
-    // Version ultra-robuste pour ton cas précis :
-    if (messageRecu.includes("04:A1:B2:C3:D4")) { uid = "04:A1:B2:C3:D4"; }
-    if (messageRecu.includes("E0:04:01:09:09:15:C0:06")) { uid = "E0:04:01:09:09:15:C0:06"; }
-
-    const user = membres[uid];
-    document.getElementById('waiting').style.display = 'none';
-    document.getElementById('profile').style.display = 'block';
-    
-    if (user) {
-        document.getElementById('name').innerText = user.nom;
-        document.getElementById('uid-val').innerText = uid;
-        document.getElementById('solde').innerText = user.solde;
-        document.getElementById('badge').innerText = user.type;
-        document.getElementById('badge').className = "status " + user.classe;
-        // Petit son de succès
-        new Audio('https://assets.mixkit.co/active_storage/sfx/2358/2358-preview.mp3').play();
-    } else {
-        document.getElementById('name').innerText = "Carte Inconnue";
-        document.getElementById('uid-val').innerText = uid;
-        document.getElementById('badge').innerText = "ERREUR";
+    function traiterUID(messageBrut) {
+        // NETTOYAGE : On extrait l'UID même s'il y a des { } " : ou des espaces
+        // Cette regex cherche un format qui ressemble à un UID (chiffres, lettres et :)
+        const regexUID = /([0-9A-Fa-f]{2}[:]){3,}[0-9A-Fa-f]{2}/;
+        const match = messageBrut.match(regexUID);
+        
+        const uid = match ? match[0].toUpperCase() : messageBrut.trim();
+        afficherProfil(uid);
     }
-}
 
-    ecouterScan(); // Lancer l'écoute
+    function afficherProfil(uid) {
+        const user = membres[uid];
+        document.getElementById('waiting').style.display = 'none';
+        const profileDiv = document.getElementById('profile');
+        profileDiv.style.display = 'block';
+        
+        if (user) {
+            document.getElementById('name').innerText = user.nom;
+            document.getElementById('uid-display').innerText = "ID: " + uid;
+            document.getElementById('solde').innerText = user.solde;
+            document.getElementById('badge').innerText = user.type;
+            document.getElementById('badge').className = "status " + user.classe;
+            // Son de succès
+            new Audio('https://assets.mixkit.co/active_storage/sfx/2358/2358-preview.mp3').play();
+        } else {
+            document.getElementById('name').innerText = "Carte Inconnue";
+            document.getElementById('uid-display').innerText = "ID détecté : " + uid;
+            document.getElementById('solde').innerText = "---";
+            document.getElementById('badge').innerText = "NON RECONNU";
+            document.getElementById('badge').className = "status error";
+        }
+    }
+
+    function resetDashboard() {
+        document.getElementById('waiting').style.display = 'block';
+        document.getElementById('profile').style.display = 'none';
+    }
+
+    // Lancement de l'écoute dès l'ouverture de la page
+    ecouterLeTelephone();
 </script>
+
 </body>
 </html>
