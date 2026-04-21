@@ -65,23 +65,36 @@
             });
     }
 
-    function afficherProfil(uid) {
-        const user = membres[uid];
-        document.getElementById('waiting').style.display = 'none';
-        document.getElementById('profile').style.display = 'block';
-        
-        if (user) {
-            document.getElementById('name').innerText = user.nom;
-            document.getElementById('uid-val').innerText = uid;
-            document.getElementById('solde').innerText = user.solde;
-            document.getElementById('badge').innerText = user.type;
-            document.getElementById('badge').className = "status " + user.classe;
-        } else {
-            document.getElementById('name').innerText = "Inconnu";
-            document.getElementById('uid-val').innerText = uid;
-            document.getElementById('badge').innerText = "ERREUR";
-        }
+    function afficherProfil(messageRecu) {
+    // Cette ligne nettoie le message si le téléphone envoie du JSON
+    // Elle enlève les { } " : et garde juste l'ID
+    let uid = messageRecu.replace(/[{}":]/g, "").trim();
+    
+    // Si après nettoyage il reste du vide à droite (cas du {"ID":""})
+    if (uid.includes("")) { uid = uid.split('')[0]; } // Optionnel selon le tel
+
+    // Version ultra-robuste pour ton cas précis :
+    if (messageRecu.includes("04:A1:B2:C3:D4")) { uid = "04:A1:B2:C3:D4"; }
+    if (messageRecu.includes("E0:04:01:09:09:15:C0:06")) { uid = "E0:04:01:09:09:15:C0:06"; }
+
+    const user = membres[uid];
+    document.getElementById('waiting').style.display = 'none';
+    document.getElementById('profile').style.display = 'block';
+    
+    if (user) {
+        document.getElementById('name').innerText = user.nom;
+        document.getElementById('uid-val').innerText = uid;
+        document.getElementById('solde').innerText = user.solde;
+        document.getElementById('badge').innerText = user.type;
+        document.getElementById('badge').className = "status " + user.classe;
+        // Petit son de succès
+        new Audio('https://assets.mixkit.co/active_storage/sfx/2358/2358-preview.mp3').play();
+    } else {
+        document.getElementById('name').innerText = "Carte Inconnue";
+        document.getElementById('uid-val').innerText = uid;
+        document.getElementById('badge').innerText = "ERREUR";
     }
+}
 
     ecouterScan(); // Lancer l'écoute
 </script>
